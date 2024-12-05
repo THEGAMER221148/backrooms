@@ -1,0 +1,166 @@
+<DOCTYPE HTML>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+        </head>
+        <body style="margin: 0%;">
+            <canvas id="gameCanvas" style="left: 0%; width: 100%; image-rendering: pixelated, crisp-edges; position:fixed;"></canvas>
+            <script>
+                const canvas = document.getElementById('gameCanvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 640;
+                canvas.height = 360;
+                ctx.antiAliasing = false;
+                let mapWidth = 10;
+                let mapHeight = 10;
+                let blockSize = 10;
+                let plr = {x: mapWidth/2*blockSize+(blockSize/2), y: mapHeight/2*blockSize+(blockSize/2), d: Math.PI/2, vx: 0, vy: 0, radius: 2, moveSpeed: 0.25};
+                let FOV = Math.PI/2;
+                let QUALITY = 320;
+                let keysDown = {};
+                let returnQuality = 0.1;
+                const WALLHEIGHT = 2000;
+                let viewDistance = 2000;
+                let mouseDX = 0;
+                let mouseDY = 0;
+                let mouseX, mouseY = 0;
+                let mousetimeoutFrames = 0;
+                let map = [
+                    1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
+                    0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
+                    1, 0, 1, 0, 1, 0, 1, 0, 0, 1,
+                    1, 0, 0, 0, 1, 0, 0, 0, 1, 1,
+                    1, 1, 1, 0, 1, 1, 0, 1, 0, 1,
+                    1, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+                    1, 0, 1, 1, 0, 0, 1, 1, 1, 1,
+                    1, 1, 0, 0, 0, 1, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 1, 0, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
+                ];
+    
+                window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
+                window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
+                window.addEventListener("mousedown", function(event){canvas.requestPointerLock();});
+                window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
+    
+                function getTileAt(x, y){
+                    return map[Math.floor((x%(mapWidth*blockSize))/blockSize)+(Math.floor((y%(mapHeight*blockSize))/blockSize)*mapHeight)];
+                }
+    
+                function checkCollision(x, y, size, q){
+                    let collided = false;
+                    return getTileAt(x, y) != 0 || getTileAt(x+size, y+size) != 0 || getTileAt(x-size, y+size) != 0 || getTileAt(x-size, y-size) != 0 || getTileAt(x-size, y-size) != 0
+                }
+    
+                function renderMinimap(){
+                    let x = 0;
+                    let y = 0;
+                    for(i = 0; i < mapWidth*mapHeight; i++){
+                        if(map[x+(y*mapWidth)] == 1){
+                            ctx.fillStyle = 'white';
+                        }else{
+                            ctx.fillStyle = 'black';
+                        }
+                        ctx.fillRect(x*blockSize, y*blockSize, blockSize, blockSize);
+                        x++;
+                        if(x>=mapWidth){
+                            x=0;
+                            y++;
+                        }
+                
+                    }
+                    ctx.fillStyle = 'red';
+                    ctx.fillRect(plr.x-(plr.radius/2), plr.y-(plr.radius/2), plr.radius, plr.radius);
+                }
+    
+                function render(){
+                    ctx.strokeStyle = 'cyan';
+                    for(i = 0; i < QUALITY; i++){
+                        let r = castRay(plr.x, plr.y, (plr.d+FOV/2)-(i*(FOV/QUALITY)), 0.1);
+                        ctx.fillStyle = 'rgb(0, ' + viewDistance/r.dist + ', 0)';
+                        r.dist *= Math.cos((plr.d+FOV/2)-(i*(FOV/QUALITY))-plr.d);
+                        ctx.fillRect(Math.floor(i*(canvas.width/QUALITY)), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/r.dist)/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/r.dist));
+                    }
+                }
+    
+                function movePlayer(){
+                    if(keysDown['w']){
+                        plr.x += Math.sin(plr.d)*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.x -= Math.sin(plr.d)*plr.moveSpeed;
+                        }
+                        plr.y += Math.cos(plr.d)*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.y -= Math.cos(plr.d)*plr.moveSpeed;
+                        }
+                    }
+                    if(keysDown['s']){
+                        plr.x -= Math.sin(plr.d)*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.x += Math.sin(plr.d)*plr.moveSpeed;
+                        }
+                        plr.y -= Math.cos(plr.d)*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.y += Math.cos(plr.d)*plr.moveSpeed;
+                        }
+                    }
+                    if(keysDown['d']){
+                        plr.x += Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.x -= Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
+                        }
+                        plr.y += Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.y -= Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
+                        }
+                    }
+                    if(keysDown['a']){
+                        plr.x += Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.x -= Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
+                        }
+                        plr.y += Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius)){
+                            plr.y -= Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
+                        }
+                    }
+                    if(keysDown['shift']){
+                        plr.moveSpeed = 0.5;
+                    }else{
+                        plr.moveSpeed = 0.25;
+                    }
+                    plr.d -= mouseDX/100;
+                }
+    
+                function castRay(X, Y, D, quality){
+                    let ray = {hit: {x: X, y: Y}, dist: 0};
+                    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && getTileAt(ray.hit.x-quality, ray.hit.y) == 0){
+                        ray.hit.x += Math.sin(D)*quality;
+                        ray.hit.y += Math.cos(D)*quality;
+                        ray.dist += quality;
+                    }
+                    while (getTileAt(ray.hit.x, ray.hit.y) != 0){
+                        ray.hit.x -= Math.sin(D)*returnQuality;
+                        ray.hit.y -= Math.cos(D)*returnQuality;
+                        ray.dist -= returnQuality;
+                    }
+                    return ray
+                }
+    
+                function step(){
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    movePlayer();
+                    render();
+                    if(mouseDX != 0){
+                        mouseDX = 0;
+                    }
+                    if(mouseDY != 0){
+                        mouseDY = 0;
+                    }
+                    requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            </script>
+        </body>
+    </html>
