@@ -11,10 +11,10 @@
                 canvas.width = 640;
                 canvas.height = 360;
                 ctx.antiAliasing = false;
-                let mapWidth = 10;
-                let mapHeight = 10;
+                let mapWidth = 20;
+                let mapHeight = 20;
                 let blockSize = 10;
-                let plr = {x: mapWidth/2*blockSize+(blockSize/2), y: mapHeight/2*blockSize+(blockSize/2), d: Math.PI/2, vx: 0, vy: 0, radius: 2, moveSpeed: 0.25};
+                let plr = {x: (mapWidth*blockSize)*2048+mapWidth/2+5, y: (mapHeight*blockSize)*2048+mapHeight/2+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0.25};
                 let FOV = Math.PI/2;
                 let QUALITY = 320;
                 let keysDown = {};
@@ -26,23 +26,35 @@
                 let mouseX, mouseY = 0;
                 let mousetimeoutFrames = 0;
                 let then = Date.now();
-                let dv = 320/Math.tan(FOV/2)
+                let dv = 320/Math.tan(FOV/2);
+                let level1 = new Image();
+                level1.src = 'Level 5.png';
                 let map = [
-                    1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
-                    0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
-                    1, 0, 1, 0, 1, 0, 1, 0, 0, 1,
-                    1, 0, 0, 0, 1, 0, 0, 0, 1, 1,
-                    1, 1, 1, 0, 1, 1, 0, 1, 0, 1,
-                    1, 0, 0, 0, 1, 0, 0, 0, 0, 1,
-                    1, 0, 1, 1, 0, 0, 1, 1, 1, 1,
-                    1, 1, 0, 0, 0, 1, 0, 0, 0, 1,
-                    1, 0, 0, 0, 0, 0, 0, 1, 0, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
+                    1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+                    1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1,
+                    1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1,
+                    1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1,
+                    0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0,
+                    1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0,
+                    0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0,
+                    1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1,
+                    0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+                    1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+                    0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0,
+                    1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1,
+                    1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1,
+                    1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1,
+                    1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1,
+                    0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0,
+                    1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1,
+                    1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
                 ];
     
                 window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
                 window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
-                window.addEventListener("mousedown", function(event){canvas.requestPointerLock();});
+                window.addEventListener("mousedown", function(event){canvas.requestPointerLock(); step();});
                 window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
     
                 function getTileAt(x, y){
@@ -76,10 +88,11 @@
                 }
     
                 function render(){
+                    //ctx.drawImage(level1, canvas.width, canvas.height);
                     ctx.strokeStyle = 'cyan';
                     for(i = 0; i < QUALITY; i++){
                         let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.1);
-                        ctx.fillStyle = 'rgb(0, ' + viewDistance/r.dist + ', 0)';
+                        ctx.fillStyle = 'rgb(' + viewDistance/r.dist + ', ' + viewDistance/r.dist + ', 0)';
                         r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
                         ctx.fillRect(Math.floor(i*(canvas.width/QUALITY)), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/r.dist)/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/r.dist));
                     }
@@ -106,26 +119,26 @@
                             plr.y += Math.cos(plr.d)*plr.moveSpeed;
                         }
                     }
-                    if(keysDown['d']){
-                        plr.x += Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.x -= Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
-                        }
-                        plr.y += Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.y -= Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
-                        }
-                    }
-                    if(keysDown['a']){
-                        plr.x += Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.x -= Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
-                        }
-                        plr.y += Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.y -= Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
-                        }
-                    }
+                    // if(keysDown['d']){
+                    //     plr.x += Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
+                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
+                    //         plr.x -= Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
+                    //     }
+                    //     plr.y += Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
+                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
+                    //         plr.y -= Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
+                    //     }
+                    // }
+                    // if(keysDown['a']){
+                    //     plr.x += Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
+                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
+                    //         plr.x -= Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
+                    //     }
+                    //     plr.y += Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
+                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
+                    //         plr.y -= Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
+                    //     }
+                    // }
                     if(keysDown['shift']){
                         plr.moveSpeed = 0.5;
                     }else{
@@ -136,7 +149,7 @@
     
                 function castRay(X, Y, D, quality){
                     let ray = {hit: {x: X, y: Y}, dist: 0};
-                    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && getTileAt(ray.hit.x-quality, ray.hit.y) == 0){
+                    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && getTileAt(ray.hit.x-quality, ray.hit.y) == 0 && ray.dist < 255){
                         ray.hit.x += Math.sin(D)*quality;
                         ray.hit.y += Math.cos(D)*quality;
                         ray.dist += quality;
@@ -162,7 +175,11 @@
                     }
                     requestAnimationFrame(step);
                 }
-                requestAnimationFrame(step);
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "200px Arial";
+                ctx.fillStyle = 'white';
+                ctx.fillText('Click to begin', 0, 200, canvas.width)
             </script>
         </body>
     </html>
