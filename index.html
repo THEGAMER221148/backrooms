@@ -25,6 +25,8 @@
                 let mouseDY = 0;
                 let mouseX, mouseY = 0;
                 let mousetimeoutFrames = 0;
+                let then = Date.now();
+                let dv = 320/Math.tan(FOV/2)
                 let map = [
                     1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
                     0, 0, 1, 0, 0, 0, 1, 1, 0, 0,
@@ -76,9 +78,9 @@
                 function render(){
                     ctx.strokeStyle = 'cyan';
                     for(i = 0; i < QUALITY; i++){
-                        let r = castRay(plr.x, plr.y, (plr.d+FOV/2)-(i*(FOV/QUALITY)), 0.1);
+                        let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.1);
                         ctx.fillStyle = 'rgb(0, ' + viewDistance/r.dist + ', 0)';
-                        r.dist *= Math.cos((plr.d+FOV/2)-(i*(FOV/QUALITY))-plr.d);
+                        r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
                         ctx.fillRect(Math.floor(i*(canvas.width/QUALITY)), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/r.dist)/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/r.dist));
                     }
                 }
