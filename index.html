@@ -14,7 +14,7 @@
                 let mapWidth = 20;
                 let mapHeight = 20;
                 let blockSize = 10;
-                let plr = {x: (mapWidth*blockSize)*2048+mapWidth/2+5, y: (mapHeight*blockSize)*2048+mapHeight/2+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0.25};
+                let plr = {x: (mapWidth*blockSize)*0.5+mapWidth/2+5, y: (mapHeight*blockSize)*0.5+mapHeight/2+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0.25};
                 let FOV = Math.PI/2;
                 let QUALITY = 320;
                 let keysDown = {};
@@ -84,7 +84,7 @@
                 
                     }
                     ctx.fillStyle = 'red';
-                    ctx.fillRect(plr.x-(plr.radius/2), plr.y-(plr.radius/2), plr.radius, plr.radius);
+                    ctx.fillRect(plr.x-(plr.radius/2), plr.y-(plr.radius/2), plr.radius+1, plr.radius+1);
                 }
     
                 function render(){
