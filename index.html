@@ -14,7 +14,7 @@
                 let mapWidth = 20;
                 let mapHeight = 20;
                 let blockSize = 10;
-                let plr = {x: (mapWidth*blockSize)*0.5+mapWidth/2+5, y: (mapHeight*blockSize)*0.5+mapHeight/2+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0.25};
+                let plr = {x: (mapWidth*blockSize)*0.5+mapWidth/2+5, y: (mapHeight*blockSize)*0.5+mapHeight/2+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0.25, moveDirction: 0};
                 let FOV = Math.PI/2;
                 let QUALITY = 320;
                 let keysDown = {};
@@ -29,6 +29,11 @@
                 let dv = 320/Math.tan(FOV/2);
                 let level1 = new Image();
                 level1.src = 'Level 5.png';
+                class entity {
+                    constructor(image, sound, speed, range) {
+                        this.img = new Image(image)
+                    }
+                }
                 let map = [
                     1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
                     1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1,
@@ -100,52 +105,40 @@
                 }
     
                 function movePlayer(){
+                    let moving = false;
+                    plr.d -= mouseDX/100;
+                    plr.moveDirction = 0;
                     if(keysDown['w']){
-                        plr.x += Math.sin(plr.d)*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.x -= Math.sin(plr.d)*plr.moveSpeed;
-                        }
-                        plr.y += Math.cos(plr.d)*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.y -= Math.cos(plr.d)*plr.moveSpeed;
-                        }
+                        plr.moveDirction += plr.d;
+                        moving = true;
                     }
                     if(keysDown['s']){
-                        plr.x -= Math.sin(plr.d)*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.x += Math.sin(plr.d)*plr.moveSpeed;
-                        }
-                        plr.y -= Math.cos(plr.d)*plr.moveSpeed;
-                        if(checkCollision(plr.x, plr.y, plr.radius)){
-                            plr.y += Math.cos(plr.d)*plr.moveSpeed;
-                        }
+                        plr.moveDirction -= plr.d;
+                        moving = true;
                     }
-                    // if(keysDown['d']){
-                    //     plr.x += Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
-                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
-                    //         plr.x -= Math.sin(plr.d-(Math.PI/2))*plr.moveSpeed;
-                    //     }
-                    //     plr.y += Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
-                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
-                    //         plr.y -= Math.cos(plr.d-(Math.PI/2))*plr.moveSpeed;
-                    //     }
-                    // }
-                    // if(keysDown['a']){
-                    //     plr.x += Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
-                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
-                    //         plr.x -= Math.sin(plr.d+(Math.PI/2))*plr.moveSpeed;
-                    //     }
-                    //     plr.y += Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
-                    //     if(checkCollision(plr.x, plr.y, plr.radius)){
-                    //         plr.y -= Math.cos(plr.d+(Math.PI/2))*plr.moveSpeed;
-                    //     }
-                    // }
+                    if(keysDown['d']){
+                        plr.moveDirction += plr.d-(Math.PI/2);
+                        moving = true;
+                    }
+                    if(keysDown['a']){
+                        plr.moveDirction += plr.d+(Math.PI/2);
+                        moving = true;
+                    }
                     if(keysDown['shift']){
                         plr.moveSpeed = 0.5;
                     }else{
                         plr.moveSpeed = 0.25;
                     }
-                    plr.d -= mouseDX/100;
+                    if(moving){
+                        plr.x += Math.sin(plr.moveDirction)*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius) != 0){
+                            plr.x -= Math.sin(plr.moveDirction)*plr.moveSpeed;
+                        }
+                        plr.y += Math.cos(plr.moveDirction)*plr.moveSpeed;
+                        if(checkCollision(plr.x, plr.y, plr.radius) != 0){
+                            plr.y -= Math.cos(plr.moveDirction)*plr.moveSpeed;
+                        }
+                    }
                 }
     
                 function castRay(X, Y, D, quality){
