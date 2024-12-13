@@ -20,16 +20,18 @@
                 let keysDown = {};
                 let returnQuality = 0.1;
                 const WALLHEIGHT = 2000;
-                let viewDistance = 2000;
+                let viewDistance = 1500;
                 let mouseDX = 0;
                 let mouseDY = 0;
                 let mouseX, mouseY = 0;
                 let mousetimeoutFrames = 0;
                 let then = Date.now();
                 let dv = 320/Math.tan(FOV/2);
-                let level1 = new Image();
                 let started = false;
-                level1.src = 'Level 5.png';
+                const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, 'rgb(128, 128, 128)');
+                grad.addColorStop(0.5, "black");
+                grad.addColorStop(1, 'rgb(128, 96, 32)');
                 class entity {
                     constructor(image, sound, speed, range) {
                         this.img = new Image(image)
@@ -57,17 +59,19 @@
                     1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
                 ];
-    
-                window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
-                window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
-                window.addEventListener("mousedown", function(event){
-                    canvas.requestPointerLock();
-                    if(!started){
-                        started = true;
-                        requestAnimationFrame(step);
-                    }
-                });
-                window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
+                //level1.onload = function(){
+                    //console.log('loaded! ', level1);
+                    window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
+                    window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
+                    window.addEventListener("mousedown", function(event){
+                        canvas.requestPointerLock();
+                        if(!started){
+                            started = true;
+                            requestAnimationFrame(step);
+                        }
+                    });
+                    window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
+                //}
     
                 function getTileAt(x, y){
                     return map[Math.floor((x%(mapWidth*blockSize))/blockSize)+(Math.floor((y%(mapHeight*blockSize))/blockSize)*mapHeight)];
@@ -108,7 +112,6 @@
                         r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
                         ctx.fillRect(Math.floor(i*(canvas.width/QUALITY)), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/r.dist)/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/r.dist));
                     }
-                    renderMinimap();
                 }
     
                 function movePlayer(){
@@ -176,6 +179,9 @@
     
                 function step(){
                     ctx.fillStyle = 'black';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    //ctx.drawImage(level1, 0, 0);
+                    ctx.fillStyle = grad;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     movePlayer();
                     render();
