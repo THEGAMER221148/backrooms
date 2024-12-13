@@ -32,9 +32,17 @@
                 grad.addColorStop(0, 'rgb(128, 128, 128)');
                 grad.addColorStop(0.5, "black");
                 grad.addColorStop(1, 'rgb(128, 96, 32)');
-                class entity {
-                    constructor(image, sound, speed, range) {
-                        this.img = new Image(image)
+                class Entity {
+                    constructor(image, sound, speed, range, x, y, d) {
+                        this.img = new Image(10, 10);
+                        this.img.src = image;
+                        this.sound = new Audio(sound);
+                        this.sound.loop = true;
+                        this.speed = speed;
+                        this.range = range;
+                        this.x = x;
+                        this.y = y;
+                        this.d = d;
                     }
                 }
                 let map = [
@@ -59,6 +67,9 @@
                     1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
                 ];
+                let loadedEntities = [
+                    new Entity('assets/fsh.png', null, 0.01, 30, plr.x-10, plr.y),
+                ]
                 //level1.onload = function(){
                     //console.log('loaded! ', level1);
                     window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
@@ -67,6 +78,9 @@
                         canvas.requestPointerLock();
                         if(!started){
                             started = true;
+                            loadedEntities = [
+                                new Entity('assets/fsh.png', null, 0.01, 30, plr.x-10, plr.y),
+                            ]
                             requestAnimationFrame(step);
                         }
                     });
@@ -79,7 +93,12 @@
     
                 function checkCollision(x, y, size, q){
                     let collided = false;
-                    return getTileAt(x, y) != 0 || getTileAt(x+size, y+size) != 0 || getTileAt(x-size, y+size) != 0 || getTileAt(x-size, y-size) != 0 || getTileAt(x-size, y-size) != 0
+                    for(let i = 0; i < loadedEntities.length; i++){
+                        if(Math.abs(x-loadedEntities[i].x) <= 2 && Math.abs(y-loadedEntities[i].y) <= 2){
+                            collided = true;
+                        }
+                    }
+                    return getTileAt(x, y) != 0 || getTileAt(x+size, y+size) != 0 || getTileAt(x-size, y+size) != 0 || getTileAt(x-size, y-size) != 0 || getTileAt(x-size, y-size) != 0 || collided
                 }
     
                 function renderMinimap(){
@@ -101,6 +120,9 @@
                     }
                     ctx.fillStyle = 'red';
                     ctx.fillRect(plr.x-(plr.radius/2), plr.y-(plr.radius/2), plr.radius+1, plr.radius+1);
+                    for(let i = 0; i < loadedEntities.length; i++){
+                        ctx.fillRect(loadedEntities[i].x-1, loadedEntities[i].y-1, 2, 2);
+                    }
                 }
     
                 function render(){
@@ -112,9 +134,10 @@
                         r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
                         ctx.fillRect(Math.floor(i*(canvas.width/QUALITY)), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/r.dist)/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/r.dist));
                     }
+                    renderMinimap();
                 }
     
-                function movePlayer(){
+                function moveEntities(){
                     let moving = false;
                     plr.d -= mouseDX/100;
                     plr.moveDirction = plr.d;
@@ -160,16 +183,28 @@
                             plr.y -= Math.cos(plr.moveDirction)*plr.moveSpeed;
                         }
                     }
+                    //move entities
+                    for(let i = 0; i < loadedEntities.length; i++){
+                        loadedEntities[i].x += loadedEntities[i].speed*(plr.x-loadedEntities[i].x/Math.abs(plr.x-loadedEntities[i].x));
+                        loadedEntities[i].y += loadedEntities[i].speed*(plr.y-loadedEntities[i].y/Math.abs(plr.y-loadedEntities[i].y));
+                    }
                 }
     
                 function castRay(X, Y, D, quality){
                     let ray = {hit: {x: X, y: Y}, dist: 0};
-                    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && getTileAt(ray.hit.x-quality, ray.hit.y) == 0 && ray.dist < 255){
+                    let collided = false;
+                    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && getTileAt(ray.hit.x-quality, ray.hit.y) == 0 && ray.dist < 255 && !collided){
                         ray.hit.x += Math.sin(D)*quality;
                         ray.hit.y += Math.cos(D)*quality;
                         ray.dist += quality;
+                        for(let i = 0; i < loadedEntities.length; i++){
+                            if(Math.abs(ray.hit.x-loadedEntities[i].x) <= 2 && Math.abs(ray.hit.y-loadedEntities[i].y) <= 2){
+                                collided = true;
+                                break;
+                            }
+                        }
                     }
-                    while (getTileAt(ray.hit.x, ray.hit.y) != 0){
+                    while (getTileAt(ray.hit.x, ray.hit.y) != 0 && !collided){
                         ray.hit.x -= Math.sin(D)*returnQuality;
                         ray.hit.y -= Math.cos(D)*returnQuality;
                         ray.dist -= returnQuality;
@@ -183,7 +218,7 @@
                     //ctx.drawImage(level1, 0, 0);
                     ctx.fillStyle = grad;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    movePlayer();
+                    moveEntities();
                     render();
                     if(mouseDX != 0){
                         mouseDX = 0;
