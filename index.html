@@ -67,9 +67,7 @@
                     1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
                 ];
-                let loadedEntities = [
-                    new Entity('assets/fsh.png', null, 0.01, 30, plr.x-10, plr.y),
-                ]
+                let loadedEntities = [];
                 //level1.onload = function(){
                     //console.log('loaded! ', level1);
                     window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
@@ -79,9 +77,10 @@
                         if(!started){
                             started = true;
                             loadedEntities = [
-                                new Entity('assets/fsh.png', null, 0.01, 30, plr.x-10, plr.y),
+                                new Entity('assets/fsh.jpg', undefined, 0.4, 30, plr.x-10, 200, 1),
                             ]
                             requestAnimationFrame(step);
+                            console.log(loadedEntities);
                         }
                     });
                     window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
@@ -118,8 +117,9 @@
                         }
                 
                     }
-                    ctx.fillStyle = 'red';
+                    ctx.fillStyle = 'green';
                     ctx.fillRect(plr.x-(plr.radius/2), plr.y-(plr.radius/2), plr.radius+1, plr.radius+1);
+                    ctx.fillStyle = 'red';
                     for(let i = 0; i < loadedEntities.length; i++){
                         ctx.fillRect(loadedEntities[i].x-1, loadedEntities[i].y-1, 2, 2);
                     }
@@ -173,6 +173,9 @@
                     }else{
                         plr.moveSpeed = 0.25;
                     }
+                    if(keysDown['insert']){
+                        console.log(loadedEntities);
+                    }
                     if(moving){
                         plr.x += Math.sin(plr.moveDirction)*plr.moveSpeed;
                         if(checkCollision(plr.x, plr.y, plr.radius) != 0){
@@ -185,8 +188,9 @@
                     }
                     //move entities
                     for(let i = 0; i < loadedEntities.length; i++){
-                        loadedEntities[i].x += loadedEntities[i].speed*(plr.x-loadedEntities[i].x/Math.abs(plr.x-loadedEntities[i].x));
-                        loadedEntities[i].y += loadedEntities[i].speed*(plr.y-loadedEntities[i].y/Math.abs(plr.y-loadedEntities[i].y));
+                        loadedEntities[i].d = Math.atan2(plr.x - loadedEntities[i].x, plr.y - loadedEntities[i].y);
+                        loadedEntities[i].x += Math.sin(loadedEntities[i].d)*loadedEntities[i].speed;
+                        loadedEntities[i].y += Math.cos(loadedEntities[i].d)*loadedEntities[i].speed;
                     }
                 }
     
