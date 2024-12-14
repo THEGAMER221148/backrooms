@@ -14,7 +14,7 @@
                 let mapWidth = 20;
                 let mapHeight = 20;
                 let blockSize = 10;
-                let plr = {x: (mapWidth*blockSize)*0.5+mapWidth/2+5, y: (mapHeight*blockSize)*0.5+mapHeight/2+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0.25, moveDirction: 0};
+                let plr = {x: (mapWidth*blockSize)*0.5+mapWidth/2+5, y: (mapHeight*blockSize)*0.5+mapHeight/2+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0, moveDirction: 0};
                 let FOV = Math.PI/2;
                 let QUALITY = 320;
                 let keysDown = {};
@@ -29,13 +29,16 @@
                 let deltaTime = 0.1;
                 let dv = 320/Math.tan(FOV/2);
                 let started = false;
+                let raycastDistances = [];
+                let raycastXs = [];
+                let raycastTypes = [];
                 const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 grad.addColorStop(0, 'rgb(128, 128, 128)');
                 grad.addColorStop(0.5, "black");
                 grad.addColorStop(1, 'rgb(128, 96, 32)');
                 class Entity {
                     constructor(image, sound, speed, range, x, y, d) {
-                        this.img = new Image(10, 10);
+                        this.img = new Image(50, 50);
                         this.img.src = image;
                         this.sound = new Audio(sound);
                         this.sound.loop = true;
@@ -78,7 +81,7 @@
                         if(!started){
                             started = true;
                             loadedEntities = [
-                                new Entity('assets/fsh.jpg', undefined, 0.4, 30, plr.x-10, 200, 1),
+                                new Entity('assets/Chatticussabluddington.webp', undefined, 0.3, 30, plr.x-10, 200, 1),
                             ]
                             requestAnimationFrame(step);
                             console.log(loadedEntities);
@@ -86,18 +89,17 @@
                     });
                     window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
                 //}
-    
+                
+                function getDistanceFrom(x1, y1, x2, y2){
+                    return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+                }
+
                 function getTileAt(x, y){
                     return map[Math.floor((x%(mapWidth*blockSize))/blockSize)+(Math.floor((y%(mapHeight*blockSize))/blockSize)*mapHeight)];
                 }
     
                 function checkCollision(x, y, size, q){
                     let collided = false;
-                    for(let i = 0; i < loadedEntities.length; i++){
-                        if(Math.abs(x-loadedEntities[i].x) <= 2 && Math.abs(y-loadedEntities[i].y) <= 2){
-                            collided = true;
-                        }
-                    }
                     return getTileAt(x, y) != 0 || getTileAt(x+size, y+size) != 0 || getTileAt(x-size, y+size) != 0 || getTileAt(x-size, y-size) != 0 || getTileAt(x-size, y-size) != 0 || collided
                 }
     
@@ -127,13 +129,31 @@
                 }
     
                 function render(){
-                    //ctx.drawImage(level1, canvas.width, canvas.height);
-                    ctx.strokeStyle = 'cyan';
+                    //get distances
+                    raycastDistances = [viewDistance+blockSize+1];
+                    raycastTypes = [];
+                    raycastXs = [];
                     for(i = 0; i < QUALITY; i++){
                         let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.1);
-                        ctx.fillStyle = 'rgb(' + viewDistance/r.dist + ', ' + viewDistance/r.dist + ', 0)';
                         r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
-                        ctx.fillRect(Math.floor(i*(canvas.width/QUALITY)), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/r.dist)/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/r.dist));
+                        raycastTypes.push(1);
+                        raycastXs.push(i);
+                        raycastDistances.push(r.dist);
+                    }
+                    //render walls and entities
+                    for(i = 0; i < raycastXs.length; i++){
+                        if(raycastTypes[i] == 1){
+                            ctx.fillStyle = 'rgb(' + viewDistance/raycastDistances[i+1] + ', ' + viewDistance/raycastDistances[i+1] + ', 0)';
+                            ctx.fillRect(Math.floor(i*(canvas.width/QUALITY)), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/raycastDistances[i+1])/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/raycastDistances[i+1]));
+                        }
+                    }
+                    for(i = 0; i < loadedEntities.length; i++){
+                        let entity = loadedEntities[i];
+                        let distanceToScreen = ((entity.x - plr.x) * Math.sin(plr.d)) + ((entity.y - plr.y) * Math.cos(plr.d));
+                        let size = 10 * (dv / distanceToScreen);
+                        size = size/100 * getDistanceFrom(0, 0, entity.img.width, entity.img.height);
+                        console.log((((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d)))/ distanceToScreen)
+                        ctx.drawImage(entity.img, (canvas.width / 2) - (((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d))) * (dv / distanceToScreen) - (size / 2), canvas.height / 2 - size / 2, size, size);
                     }
                     renderMinimap();
                 }
@@ -172,26 +192,35 @@
                     if(keysDown['shift']){
                         plr.moveSpeed = 0.5;
                     }else{
-                        plr.moveSpeed = 0.25;
+                        plr.moveSpeed = 0.4;
                     }
                     if(keysDown['insert']){
                         console.log(loadedEntities);
                     }
                     if(moving){
-                        plr.x += Math.sin(plr.moveDirction)*plr.moveSpeed;
+                        plr.vx += Math.sin(plr.moveDirction)*plr.moveSpeed;
+                        plr.vy += Math.cos(plr.moveDirction)*plr.moveSpeed;
+                        plr.vx *= plr.moveSpeed;
+                        plr.vy *= plr.moveSpeed;
+                        plr.x += plr.vx*(deltaTime/17);
                         if(checkCollision(plr.x, plr.y, plr.radius) != 0){
-                            plr.x -= Math.sin(plr.moveDirction)*plr.moveSpeed;
+                            plr.x -= plr.vx;
+                            plr.vx = 0;
                         }
-                        plr.y += Math.cos(plr.moveDirction)*plr.moveSpeed;
+                        plr.y += plr.vy*(deltaTime/17);
                         if(checkCollision(plr.x, plr.y, plr.radius) != 0){
-                            plr.y -= Math.cos(plr.moveDirction)*plr.moveSpeed;
+                            plr.y -= plr.vy;
+                            plr.vy = 0;
                         }
+                    }else{
+                        plr.vx = 0;
+                        plr.vy = 0;
                     }
                     //move entities
                     for(let i = 0; i < loadedEntities.length; i++){
                         loadedEntities[i].d = Math.atan2(plr.x - loadedEntities[i].x, plr.y - loadedEntities[i].y);
-                        loadedEntities[i].x += Math.sin(loadedEntities[i].d)*loadedEntities[i].speed;
-                        loadedEntities[i].y += Math.cos(loadedEntities[i].d)*loadedEntities[i].speed;
+                        loadedEntities[i].x += Math.sin(loadedEntities[i].d)*(loadedEntities[i].speed*(deltaTime/17));
+                        loadedEntities[i].y += Math.cos(loadedEntities[i].d)*(loadedEntities[i].speed*(deltaTime/17));
                     }
                 }
     
@@ -202,12 +231,6 @@
                         ray.hit.x += Math.sin(D)*quality;
                         ray.hit.y += Math.cos(D)*quality;
                         ray.dist += quality;
-                        for(let i = 0; i < loadedEntities.length; i++){
-                            if(Math.abs(ray.hit.x-loadedEntities[i].x) <= 2 && Math.abs(ray.hit.y-loadedEntities[i].y) <= 2){
-                                collided = true;
-                                break;
-                            }
-                        }
                     }
                     while (getTileAt(ray.hit.x, ray.hit.y) != 0 && !collided){
                         ray.hit.x -= Math.sin(D)*returnQuality;
@@ -220,7 +243,6 @@
                 function step(){
                     deltaTime = Date.now() - then;
                     then = Date.now();
-                    console.log(deltaTime);
                     ctx.fillStyle = 'black';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     //ctx.drawImage(level1, 0, 0);
