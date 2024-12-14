@@ -26,6 +26,7 @@
                 let mouseX, mouseY = 0;
                 let mousetimeoutFrames = 0;
                 let then = Date.now();
+                let deltaTime = 0.1;
                 let dv = 320/Math.tan(FOV/2);
                 let started = false;
                 const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -217,6 +218,9 @@
                 }
     
                 function step(){
+                    deltaTime = Date.now() - then;
+                    then = Date.now();
+                    console.log(deltaTime);
                     ctx.fillStyle = 'black';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     //ctx.drawImage(level1, 0, 0);
