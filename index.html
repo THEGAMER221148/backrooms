@@ -165,15 +165,12 @@
                             let distanceToScreen = ((entity.x - plr.x) * Math.sin(plr.d)) + ((entity.y - plr.y) * Math.cos(plr.d));
                             let size = 8 * (dv / distanceToScreen);
                             size = size/100 * getDistanceFrom(0, 0, entity.img.width, entity.img.height);
-                            if(temporaryRaycastData[i].speed == 0.4){
-                                console.log((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y));
-                            }
                             if(Math.abs((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y)) < Math.PI/2 || Math.abs((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y)) > Math.PI*1.5){
                                 ctx.drawImage(entity.img, (canvas.width / 2) - (((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d))) * (dv / distanceToScreen) - (size / 2), canvas.height / 2 - size / 2, size, size);
                             }
                         }
                     }
-                    renderMinimap();
+                    //renderMinimap();
                 }
     
                 function moveEntities(){
