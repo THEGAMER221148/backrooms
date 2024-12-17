@@ -29,9 +29,7 @@
                 let deltaTime = 0.1;
                 let dv = 320/Math.tan(FOV/2);
                 let started = false;
-                let raycastDistances = [];
-                let raycastXs = [];
-                let raycastTypes = [];
+                let temporaryRaycastData = [];
                 const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 grad.addColorStop(0, 'rgb(128, 128, 128)');
                 grad.addColorStop(0.5, "black");
@@ -47,6 +45,7 @@
                         this.x = x;
                         this.y = y;
                         this.d = d;
+                        this.type = 'entity'
                     }
                 }
                 let map = [
@@ -72,24 +71,21 @@
                     1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
                 ];
                 let loadedEntities = [];
-                //level1.onload = function(){
-                    //console.log('loaded! ', level1);
-                    window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
-                    window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
-                    window.addEventListener("mousedown", function(event){
-                        canvas.requestPointerLock();
-                        if(!started){
-                            started = true;
-                            loadedEntities = [
-                                new Entity('assets/Chatticussabluddington.webp', undefined, 0.3, 30, plr.x-10, 200, 1),
-                            ]
-                            requestAnimationFrame(step);
-                            console.log(loadedEntities);
-                        }
-                    });
-                    window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
-                //}
-                
+                window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
+                window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
+                window.addEventListener("mousedown", function(event){
+                    canvas.requestPointerLock();
+                    if(!started){
+                        started = true;
+                        loadedEntities = [
+                            new Entity('assets/fsh.jpg', undefined, 0.4, 30, 180, 185, 1),
+                            new Entity('assets/Chatticussabluddington.webp', undefined, 0.25, 25, 15, 10, 1),
+                        ]
+                        requestAnimationFrame(step);
+                        console.log(loadedEntities);
+                    }
+                });
+                window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
                 function getDistanceFrom(x1, y1, x2, y2){
                     return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
                 }
@@ -130,38 +126,49 @@
     
                 function render(){
                     //get distances
-                    raycastDistances = [viewDistance+blockSize+1];
-                    raycastTypes = [undefined];
-                    raycastXs = [undefined];
-                    let drawIDX = 1;
+                    temporaryRaycastData = [{dist: 999999, x: 0, type: 'wall'}];
+                    let drawIDX = 0;
                     let insertX = 0;
-                    for(i = 0; i < QUALITY; i++){
+                    for(i = 1; i < QUALITY+1; i++){
                         let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.1);
                         r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
                         drawIDX = 1;
-                        while(raycastDistances[drawIDX-1] < r.dist){
+                        while(temporaryRaycastData[drawIDX-1].dist < r.dist){
                             drawIDX --;
                         }
-                        while(raycastDistances[drawIDX] > r.dist){
+                        while(temporaryRaycastData[drawIDX] != undefined && temporaryRaycastData[drawIDX].dist > r.dist){
                             drawIDX ++;
                         }
-                        raycastTypes.splice(drawIDX, 0, 1);
-                        raycastXs.splice(drawIDX, 0, insertX);
-                        raycastDistances.splice(drawIDX, 0, r.dist);
+                        temporaryRaycastData.splice(drawIDX, 0, {dist: r.dist, x: insertX, type: 'wall'});
                         insertX += (canvas.width/QUALITY);
+                    }
+                    for(i = 0; i < loadedEntities.length; i++){
+                        let dist = getDistanceFrom(plr.x, plr.y, loadedEntities[i].x, loadedEntities[i].y);
+                        insertX = 0;
+                        drawIDX = 1;
+                        while(temporaryRaycastData[drawIDX-1].dist < dist){
+                            drawIDX --;
+                        }
+                        while(temporaryRaycastData[drawIDX] != undefined && temporaryRaycastData[drawIDX].dist > dist){
+                            drawIDX ++;
+                        }
+                        temporaryRaycastData.splice(drawIDX, 0, loadedEntities[i])
                     }
                     for(i = 0; i < loadedEntities.length; i++){}
                     //render walls and entities
-                    for(i = 1; i < raycastXs.length; i++){
-                        if(raycastTypes[i] == 1){
-                            ctx.fillStyle = 'rgb(' + viewDistance/raycastDistances[i+1] + ', ' + viewDistance/raycastDistances[i+1] + ', 0)';
-                            ctx.fillRect((raycastXs[i]), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/raycastDistances[i+1])/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/raycastDistances[i+1]));
-                            for(j = 0; j < loadedEntities.length; j++){
-                                let entity = loadedEntities[j];
-                                let distanceToScreen = ((entity.x - plr.x) * Math.sin(plr.d)) + ((entity.y - plr.y) * Math.cos(plr.d));
-                                let size = 10 * (dv / distanceToScreen);
-                                size = size/100 * getDistanceFrom(0, 0, entity.img.width, entity.img.height);
-                                console.log((((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d)))/ distanceToScreen)
+                    for(i = 1; i < temporaryRaycastData.length; i++){
+                        if(temporaryRaycastData[i].type == 'wall'){
+                            ctx.fillStyle = 'rgb(' + viewDistance/temporaryRaycastData[i].dist + ', ' + viewDistance/temporaryRaycastData[i].dist + ', 0)';
+                            ctx.fillRect((temporaryRaycastData[i].x), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/temporaryRaycastData[i].dist)/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/temporaryRaycastData[i].dist));
+                        }else if(temporaryRaycastData[i].type == 'entity'){
+                            let entity = temporaryRaycastData[i];
+                            let distanceToScreen = ((entity.x - plr.x) * Math.sin(plr.d)) + ((entity.y - plr.y) * Math.cos(plr.d));
+                            let size = 8 * (dv / distanceToScreen);
+                            size = size/100 * getDistanceFrom(0, 0, entity.img.width, entity.img.height);
+                            if(temporaryRaycastData[i].speed == 0.4){
+                                console.log((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y));
+                            }
+                            if(Math.abs((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y)) < Math.PI/2 || Math.abs((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y)) > Math.PI*1.5){
                                 ctx.drawImage(entity.img, (canvas.width / 2) - (((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d))) * (dv / distanceToScreen) - (size / 2), canvas.height / 2 - size / 2, size, size);
                             }
                         }
@@ -172,6 +179,11 @@
                 function moveEntities(){
                     let moving = false;
                     plr.d -= mouseDX/100;
+                    if(plr.d < 0){
+                        plr.d = Math.PI*2;
+                    }else if(plr.d > Math.PI*2){
+                        plr.d = 0;
+                    }
                     plr.d = Math.floor(plr.d/(FOV/QUALITY))*(FOV/QUALITY);
                     plr.moveDirction = plr.d;
                     if(keysDown['w']){
@@ -207,7 +219,7 @@
                         plr.moveSpeed = 0.4;
                     }
                     if(keysDown['insert']){
-                        console.log(raycastDistances, raycastXs);
+                        console.log(temporaryRaycastData);
                     }
                     if(moving){
                         plr.vx += Math.sin(plr.moveDirction)*plr.moveSpeed;
@@ -232,7 +244,16 @@
                     for(let i = 0; i < loadedEntities.length; i++){
                         loadedEntities[i].d = Math.atan2(plr.x - loadedEntities[i].x, plr.y - loadedEntities[i].y);
                         loadedEntities[i].x += Math.sin(loadedEntities[i].d)*(loadedEntities[i].speed*(deltaTime/17));
+                        if(checkCollision(loadedEntities[i].x, loadedEntities[i].y, 1) != 0){
+                            loadedEntities[i].x -= Math.sin(loadedEntities[i].d)*(loadedEntities[i].speed*(deltaTime/17));
+                        }
                         loadedEntities[i].y += Math.cos(loadedEntities[i].d)*(loadedEntities[i].speed*(deltaTime/17));
+                        if(checkCollision(loadedEntities[i].x, loadedEntities[i].y, 1) != 0){
+                            loadedEntities[i].y -= Math.cos(loadedEntities[i].d)*(loadedEntities[i].speed*(deltaTime/17));
+                        }
+                        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 1){
+                            location.reload();
+                        }
                     }
                 }
     
