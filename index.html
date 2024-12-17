@@ -150,6 +150,7 @@
                         raycastDistances.splice(drawIDX, 0, r.dist);
                         insertX += (canvas.width/QUALITY);
                     }
+                    for(i = 0; i < loadedEntities.length; i++){}
                     //render walls and entities
                     for(i = 1; i < raycastXs.length; i++){
                         if(raycastTypes[i] == 1){
@@ -157,13 +158,11 @@
                             ctx.fillRect((raycastXs[i]), Math.floor((canvas.height/2-(0))-(WALLHEIGHT/raycastDistances[i+1])/2), Math.ceil(canvas.width/QUALITY), Math.ceil(WALLHEIGHT/raycastDistances[i+1]));
                             for(j = 0; j < loadedEntities.length; j++){
                                 let entity = loadedEntities[j];
-                                if(raycastDistances[i+1]-getDistanceFrom(plr.x, plr.y, entity.x, entity.y) < 0.1){
-                                    let distanceToScreen = ((entity.x - plr.x) * Math.sin(plr.d)) + ((entity.y - plr.y) * Math.cos(plr.d));
-                                    let size = 10 * (dv / distanceToScreen);
-                                    size = size/100 * getDistanceFrom(0, 0, entity.img.width, entity.img.height);
-                                    console.log((((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d)))/ distanceToScreen)
-                                    ctx.drawImage(entity.img, (canvas.width / 2) - (((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d))) * (dv / distanceToScreen) - (size / 2), canvas.height / 2 - size / 2, size, size);
-                                }
+                                let distanceToScreen = ((entity.x - plr.x) * Math.sin(plr.d)) + ((entity.y - plr.y) * Math.cos(plr.d));
+                                let size = 10 * (dv / distanceToScreen);
+                                size = size/100 * getDistanceFrom(0, 0, entity.img.width, entity.img.height);
+                                console.log((((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d)))/ distanceToScreen)
+                                ctx.drawImage(entity.img, (canvas.width / 2) - (((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d))) * (dv / distanceToScreen) - (size / 2), canvas.height / 2 - size / 2, size, size);
                             }
                         }
                     }
