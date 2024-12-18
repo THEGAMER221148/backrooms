@@ -35,7 +35,7 @@
                 grad.addColorStop(0.5, "black");
                 grad.addColorStop(1, 'rgb(128, 96, 32)');
                 class Entity {
-                    constructor(image, sound, speed, range, x, y, d) {
+                    constructor(image, sound, speed, range, x, y, d, volume) {
                         this.img = new Image(50, 50);
                         this.img.src = image;
                         this.sound = new Audio(sound);
@@ -45,6 +45,7 @@
                         this.x = x;
                         this.y = y;
                         this.d = d;
+                        this.mv = volume;
                         this.type = 'entity';
                     }
                 }
@@ -78,9 +79,9 @@
                     if(!started){
                         started = true;
                         loadedEntities = [
-                            new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.4, 75, 180, 185, 1),
-                            new Entity('assets/Chatticussabluddington.webp', undefined, 0.25, 50, 15, 10, 1),
-                            new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.3, 25, 200, 10, 1),
+                            new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.4, 75, 180, 185, 1, 1),
+                            new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.25, 50, 15, 10, 1, 1),
+                            //new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.3, 25, 200, 10, 0, 0.0001),
                         ]
                         requestAnimationFrame(step);
                         console.log(loadedEntities);
@@ -171,8 +172,9 @@
                             if(Math.abs((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y)) < Math.PI/2 || Math.abs((plr.d-Math.PI) - Math.atan2(plr.x - temporaryRaycastData[i].x, plr.y - temporaryRaycastData[i].y)) > Math.PI*1.5){
                                 ctx.drawImage(entity.img, (canvas.width / 2) - (((entity.x - plr.x) * Math.cos(plr.d)) - ((entity.y - plr.y) * Math.sin(plr.d))) * (dv / distanceToScreen) - (size / 2), canvas.height / 2 - size / 2, size, size);
                             }
-                            if(Number((-getDistanceFrom(entity.x, entity.y, plr.x, plr.y)/entity.range)+1) > 0){
-                                entity.sound.volume = (-getDistanceFrom(entity.x, entity.y, plr.x, plr.y)/entity.range)+1;
+                            if(Number((-getDistanceFrom(entity.x, entity.y, plr.x, plr.y)/entity.range)+1)*entity.mv > 0){
+                                entity.sound.volume = ((-getDistanceFrom(entity.x, entity.y, plr.x, plr.y)/entity.range)+1)*entity.mv;
+                                console.log(entity.mv);
                             }
                         }
                     }
@@ -231,12 +233,12 @@
                         plr.vy *= plr.moveSpeed;
                         plr.x += plr.vx*(deltaTime/17);
                         if(checkCollision(plr.x, plr.y, plr.radius) != 0){
-                            plr.x -= plr.vx;
+                            plr.x -= plr.vx*(deltaTime/17);
                             plr.vx = 0;
                         }
                         plr.y += plr.vy*(deltaTime/17);
                         if(checkCollision(plr.x, plr.y, plr.radius) != 0){
-                            plr.y -= plr.vy;
+                            plr.y -= plr.vy*(deltaTime/17);
                             plr.vy = 0;
                         }
                     }else{
@@ -262,8 +264,8 @@
                             loadedEntities[i].x = plr.x + (Math.random() - 0.5) * 100;
                             loadedEntities[i].y = plr.y + (Math.random() - 0.5) * 100;
                             while(checkCollision(loadedEntities[i].x, loadedEntities[i].y, 1) != 0 || getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < blockSize * 3){
-                                loadedEntities[i].x = plr.x + (Math.random() - 0.5) * 100;
-                                loadedEntities[i].y = plr.y + (Math.random() - 0.5) * 100;
+                                loadedEntities[i].x += 1;
+                                loadedEntities[i].y += 1;
                             }
                         }
                     }
