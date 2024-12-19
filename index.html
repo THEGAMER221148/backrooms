@@ -256,7 +256,15 @@
                     }
                     //move entities
                     for(let i = 0; i < loadedEntities.length; i++){
-                        loadedEntities[i].d = Math.atan2(plr.x - loadedEntities[i].x, plr.y - loadedEntities[i].y);
+                        //let dX, dY, dir;
+                        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < loadedEntities[i].range){
+                            loadedEntities[i].d = Math.atan2(plr.x - loadedEntities[i].x, plr.y - loadedEntities[i].y);
+                        }else{
+                            if(Date.now()%200 == 0){
+                                loadedEntities[i].d = Math.random()*(Math.PI*2);
+                                console.log('move');
+                            }
+                        }
                         loadedEntities[i].x += (Math.sin(loadedEntities[i].d)*(loadedEntities[i].speed)*(deltaTime/17));
                         if(checkCollision(loadedEntities[i].x, loadedEntities[i].y, 1) != 0){
                             loadedEntities[i].x -= (Math.sin(loadedEntities[i].d)*(loadedEntities[i].speed)*(deltaTime/17));
