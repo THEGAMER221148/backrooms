@@ -266,6 +266,7 @@
                             loadedEntities[i].y -= (Math.cos(loadedEntities[i].d)*(loadedEntities[i].speed)*(deltaTime/17));
                         }
                         if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 2){
+                            loadedEntities = [];
                             location.reload();
                         }
 
