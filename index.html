@@ -31,6 +31,11 @@
                 let dv = (canvas.width/2)/Math.tan(FOV/2);
                 let started = false;
                 let temporaryRaycastData = [];
+                let score = 0;
+                if(Number(localStorage.getItem("HighScore")) == NaN){
+                    localStorage.setItem("HighScore", 0);
+                }
+                let pB = Math.round(Number(localStorage.getItem("HighScore")));
                 const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 grad.addColorStop(0, 'rgb(128, 128, 128)');
                 grad.addColorStop(0.5, "black");
@@ -273,7 +278,10 @@
                         if(checkCollision(loadedEntities[i].x, loadedEntities[i].y, 1) != 0){
                             loadedEntities[i].y -= (Math.cos(loadedEntities[i].d)*(loadedEntities[i].speed)*(deltaTime/17));
                         }
-                        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 2){
+                        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 1){
+                            if(score > pB){
+                                localStorage.setItem("HighScore", score);
+                            }
                             loadedEntities = [];
                             location.reload();
                         }
@@ -321,13 +329,18 @@
                     if(mouseDY != 0){
                         mouseDY = 0;
                     }
+                    score = Math.round(getDistanceFrom(plr.x, plr.y, (mapWidth*blockSize)*2048+(mapWidth/2)*blockSize-5, (mapHeight*blockSize)*2048+(mapHeight/2)*blockSize+5));
+                    ctx.fillStyle = 'red';
+                    ctx.fillText('Score: ' + score, 50, 50);
                     requestAnimationFrame(step);
                 }
                 ctx.fillStyle = 'black';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.font = "200px Arial";
                 ctx.fillStyle = 'white';
-                ctx.fillText('Click to begin', 0, 200, canvas.width)
+                ctx.fillText('Click to begin', 0, 200, canvas.width);
+                ctx.fillText('High Score: ' + pB, 0, 450, canvas.width);
+                ctx.font = "50px Arial";
             </script>
         </body>
     </html>
