@@ -282,6 +282,7 @@
                             if(score > pB){
                                 localStorage.setItem("HighScore", score);
                             }
+                            localStorage.setItem("PevScore", score);
                             loadedEntities = [];
                             location.reload();
                         }
@@ -339,7 +340,9 @@
                 ctx.font = "200px Arial";
                 ctx.fillStyle = 'white';
                 ctx.fillText('Click to begin', 0, 200, canvas.width);
-                ctx.fillText('High Score: ' + pB, 0, 450, canvas.width);
+                ctx.font = "150px Arial";
+                ctx.fillText('High Score: ' + pB, 0, 400, canvas.width);
+                ctx.fillText("Previous Score: " + localStorage.getItem("PevScore"), 0, 600, canvas.width)
                 ctx.font = "50px Arial";
             </script>
         </body>
