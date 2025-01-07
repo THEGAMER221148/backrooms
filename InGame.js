@@ -80,10 +80,10 @@ window.addEventListener("mousedown", function(){
     if(!started){
         started = true;
         loadedEntities = [
-            new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.04, 75, plr.x + 120, plr.y + 0, 1),
-            new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.025, 50, plr.x + 0, plr.y - 120, 1),
-            new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.03, 30, plr.x + 60, plr.y + 60, 0.5),
-            new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.042, 100, 15, 10, 1),
+            new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75, plr.x + 120, plr.y + 0, 1),
+            new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
+            new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
+            new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.095, 100, 15, 10, 1),
         ]
         requestAnimationFrame(step);
         console.log(loadedEntities);
@@ -187,7 +187,7 @@ function render(){
             }
         }
     }
-    renderMinimap();
+    // renderMinimap();
 }
 
 function moveEntities(){
@@ -228,9 +228,9 @@ function moveEntities(){
         moving = true;
     }
     if(keysDown['shift']){
-        plr.moveSpeed = 0.5;
+        plr.moveSpeed = 0.1;
     }else{
-        plr.moveSpeed = 0.4;
+        plr.moveSpeed = 0.06;
     }
     if(keysDown['insert']){
         console.log(temporaryRaycastData);
@@ -238,8 +238,8 @@ function moveEntities(){
     if(moving){
         plr.vx += Math.sin(plr.moveDirction)*plr.moveSpeed;
         plr.vy += Math.cos(plr.moveDirction)*plr.moveSpeed;
-        plr.vx *= plr.moveSpeed;
-        plr.vy *= plr.moveSpeed;
+        plr.vx /= RESISTANCE;
+        plr.vy /= RESISTANCE;
         plr.x += plr.vx*(deltaTime/17);
         if(checkCollision(plr.x, plr.y, plr.radius) != 0){
             plr.x -= plr.vx*(deltaTime/17);
@@ -266,6 +266,9 @@ function moveEntities(){
             }
         }
         loadedEntities[i].vx += (Math.sin(loadedEntities[i].d)*(loadedEntities[i].speed));
+        loadedEntities[i].vy += (Math.cos(loadedEntities[i].d)*(loadedEntities[i].speed));
+        loadedEntities[i].vx /= RESISTANCE;
+        loadedEntities[i].vy /= RESISTANCE;
         if(loadedEntities[i].vx != NaN){
             loadedEntities[i].x += loadedEntities[i].vx*(deltaTime/17);
         }
@@ -273,7 +276,6 @@ function moveEntities(){
             loadedEntities[i].x -= loadedEntities[i].vx*(deltaTime/17);
             loadedEntities[i].vx = 0;
         }
-        loadedEntities[i].vy += (Math.cos(loadedEntities[i].d)*(loadedEntities[i].speed));
         if(loadedEntities[i].vy != NaN){
             loadedEntities[i].y += loadedEntities[i].vy*(deltaTime/17);
         }
@@ -282,7 +284,7 @@ function moveEntities(){
             loadedEntities[i].y -= loadedEntities[i].vy*(deltaTime/17);
             loadedEntities[i].vy = 0;
         }
-        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 1){
+        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 1.5){
             if(score > pB){
                 localStorage.setItem("HighScore", score);
             }
