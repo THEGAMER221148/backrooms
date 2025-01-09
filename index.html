@@ -1,26 +1,72 @@
 <DOCTYPE HTML>
 <html lang="en">
     <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
         <meta charset="UTF-8">
         <title>Get Chased by your Downloads Folder</title>
+
         <style>
             .MMB {
                 width: 25%;
                 left: 37.5%;
                 position: absolute;
                 height: 12.5%;
-                border-radius: 15px;
+                border-radius: 1vw;
                 background-color: rgba(255, 55, 0, 0.5);
                 border-color: rgba(255, 55, 0, 0.75);
+                border-width: 10px;
+                font-size: 5vw;
+                font-family: "VT323", serif;
+                color: rgba(25 0, 0, 0.75);
+                z-index: 4;
             }
         </style>
     </head>
 
     <body style="margin: 0%; background-color: black;">
-        <canvas id="gameCanvas" style="left: 0%; width: 100%; image-rendering: pixelated, crisp-edges; position:fixed; visibility: hidden;"></canvas>
+        <canvas id="gameCanvas" style="left: 0%; width: 100%; image-rendering: pixelated, crisp-edges; position:fixed; visibility: hidden; z-index: 0;">The Game</canvas>
+        <canvas id="redStatic" style="left: 0%; image-rendering: pixelated; position: fixed; z-index: 1;">Red static effect</canvas>
         <script src="InGame.js"></script>
+        <script id="staticEffectScript">
+            const effectCanvas = document.getElementById("redStatic")
+            const ctx2 = effectCanvas.getContext("2d");
+            let staticing = true;
+            effectCanvas.width = window.innerWidth;
+            effectCanvas.height = window.innerHeight;
+            let staticSize = 10;
+
+            window.addEventListener("resize", function(){
+                effectCanvas.width = window.innerWidth;
+                effectCanvas.height = window.innerHeight;
+            })
+
+            function stepStatic(stopAfterFrame){
+                ctx2.clearRect(0, 0, effectCanvas.width, effectCanvas.height);
+                for(let i = 0; i < effectCanvas.width; i += staticSize){
+                    for(let j = 0; j < effectCanvas.height; j += staticSize){
+                        ctx2.fillStyle = `rgba(255, 0, 0, ${Math.random()/10})`
+                        ctx2.fillRect(i, j, staticSize, staticSize);
+                    }
+                }
+            }
+            function loopStatic(){
+                stepStatic();
+                if (staticing){
+                    requestAnimationFrame(loopStatic);
+                }else{
+                    ctx2.clearRect(0, 0, effectCanvas.width, effectCanvas.height);
+                }
+            }
+            function stopStatic(){
+                staticing = false;
+            }
+            loopStatic();
+        </script>
         <div id="MainMenu">
-            <button class="MMB" id="startButton" style="top: 37.5%" onclick="start();">hi</button>
+            <button class="MMB" id="startButton" style="top: 37.5%" onclick="stopStatic(); start();">START</button>
         </div>
     </body>
 </html>
