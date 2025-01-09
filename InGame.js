@@ -75,7 +75,10 @@ let map = [
 let loadedEntities = [];
 window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
 window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
-window.addEventListener("mousedown", function(){
+function start(){
+    canvas.style.visibility = 'visible';
+    console.log(canvas.style.visibility)
+    document.getElementById("MainMenu").style.visibility = 'hidden';
     canvas.requestPointerLock();
     if(!started){
         started = true;
@@ -86,7 +89,6 @@ window.addEventListener("mousedown", function(){
             new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.095, 100, 15, 10, 1),
         ]
         requestAnimationFrame(step);
-        console.log(loadedEntities);
         for(let i = 0; i < loadedEntities.length; i++){
             loadedEntities[i].sound.playbackRate = 16;
             loadedEntities[i].sound.volume = 0;
@@ -98,7 +100,7 @@ window.addEventListener("mousedown", function(){
             }
         }, 2000);
     }
-});
+}
 window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
 function getDistanceFrom(x1, y1, x2, y2){
     return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
@@ -183,7 +185,6 @@ function render(){
             }
             if(Number((-getDistanceFrom(entity.x, entity.y, plr.x, plr.y)/entity.range)+1)*entity.mv > 0){
                 entity.sound.volume = ((-getDistanceFrom(entity.x, entity.y, plr.x, plr.y)/entity.range)+1)*entity.mv;
-                console.log(entity.mv);
             }
         }
     }
@@ -233,7 +234,6 @@ function moveEntities(){
         plr.moveSpeed = 0.06;
     }
     if(keysDown['insert']){
-        console.log(temporaryRaycastData);
     }
     if(moving){
         plr.vx += Math.sin(plr.moveDirction)*plr.moveSpeed;
@@ -262,7 +262,6 @@ function moveEntities(){
         }else{
             if(Date.now()%200 == 0){
                 loadedEntities[i].d = Math.random()*(Math.PI*2);
-                console.log('move');
             }
         }
         loadedEntities[i].vx += (Math.sin(loadedEntities[i].d)*(loadedEntities[i].speed));
@@ -279,12 +278,11 @@ function moveEntities(){
         if(loadedEntities[i].vy != NaN){
             loadedEntities[i].y += loadedEntities[i].vy*(deltaTime/17);
         }
-        console.log(loadedEntities[i].y);
         if(checkCollision(loadedEntities[i].x, loadedEntities[i].y, 1) != 0){
             loadedEntities[i].y -= loadedEntities[i].vy*(deltaTime/17);
             loadedEntities[i].vy = 0;
         }
-        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 1.5){
+        if(getDistanceFrom(loadedEntities[i].x, loadedEntities[i].y, plr.x, plr.y) < 2){
             if(score > pB){
                 localStorage.setItem("HighScore", score);
             }
@@ -341,12 +339,12 @@ function step(){
     ctx.fillText('Score: ' + score, 50, 50);
     requestAnimationFrame(step);
 }
-ctx.fillStyle = 'black';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.font = "200px Arial";
-ctx.fillStyle = 'white';
-ctx.fillText('Click to begin', 0, 200, canvas.width);
-ctx.font = "150px Arial";
-ctx.fillText('High Score: ' + pB, 0, 400, canvas.width);
-ctx.fillText("Previous Score: " + localStorage.getItem("PevScore"), 0, 600, canvas.width)
-ctx.font = "50px Arial";
+// ctx.fillStyle = 'black';
+// ctx.fillRect(0, 0, canvas.width, canvas.height);
+// ctx.font = "200px Arial";
+// ctx.fillStyle = 'white';
+// ctx.fillText('Click to begin', 0, 200, canvas.width);
+// ctx.font = "150px Arial";
+// ctx.fillText('High Score: ' + pB, 0, 400, canvas.width);
+// ctx.fillText("Previous Score: " + localStorage.getItem("PevScore"), 0, 600, canvas.width)
+// ctx.font = "50px Arial";
