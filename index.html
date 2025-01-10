@@ -22,13 +22,38 @@
                 font-family: "VT323", serif;
                 color: rgba(25 0, 0, 0.75);
                 z-index: 4;
+                border-style:solid;
+            }
+            h1 {
+                position: absolute;
+                font-size: 10vw;
+                font-family: "VT323", serif;
+                color: white;
+                z-index: 3;
+                width: 100%;
+                text-align: center;
+            }
+            h2 {
+                position: absolute;
+                font-size: 5vw;
+                font-family: "VT323", serif;
+                color: white;
+                z-index: 3;
+                width: 100%;
+                text-align: center;
+            }
+            .menu {
+                visibility: hidden;
+            }
+            #MainMenu {
+                visibility: visible;
             }
         </style>
     </head>
 
     <body style="margin: 0%; background-color: black;">
         <canvas id="gameCanvas" style="left: 0%; width: 100%; image-rendering: pixelated, crisp-edges; position:fixed; visibility: hidden; z-index: 0;">The Game</canvas>
-        <canvas id="redStatic" style="left: 0%; image-rendering: pixelated; position: fixed; z-index: 1;">Red static effect</canvas>
+        <canvas id="redStatic" style="image-rendering: pixelated; position: fixed; z-index: -1;">Red static effect</canvas>
         <script src="InGame.js"></script>
         <script id="staticEffectScript">
             const effectCanvas = document.getElementById("redStatic")
@@ -36,7 +61,7 @@
             let staticing = true;
             effectCanvas.width = window.innerWidth;
             effectCanvas.height = window.innerHeight;
-            let staticSize = 10;
+            let staticSize = 20;
 
             window.addEventListener("resize", function(){
                 effectCanvas.width = window.innerWidth;
@@ -47,7 +72,7 @@
                 ctx2.clearRect(0, 0, effectCanvas.width, effectCanvas.height);
                 for(let i = 0; i < effectCanvas.width; i += staticSize){
                     for(let j = 0; j < effectCanvas.height; j += staticSize){
-                        ctx2.fillStyle = `rgba(255, 0, 0, ${Math.random()/10})`
+                        ctx2.fillStyle = `rgba(255, 0, 0, ${Math.random()/5+(Math.sin(Date.now()/500)/20)})`
                         ctx2.fillRect(i, j, staticSize, staticSize);
                     }
                 }
@@ -64,9 +89,23 @@
                 staticing = false;
             }
             loopStatic();
+            function NavigateToMenu(pageID){
+                for(let i = 0; i < document.getElementsByClassName("menu").length; i++){
+                    document.getElementsByClassName("menu")[i].style.visibility = 'hidden';
+                }
+                document.getElementById(pageID).style.visibility = 'visible';
+            }
         </script>
-        <div id="MainMenu">
+        <div class="menu" id="MainMenu">
+            <h1 style="top: -5vw;">Get Chased</h1>
+            <h2 style="top: 6vw">by your Downloads Folder</h2>
             <button class="MMB" id="startButton" style="top: 37.5%" onclick="stopStatic(); start();">START</button>
+            <button class="MMB" id="startButton" style="top: 62.5%" onclick="NavigateToMenu('Stats')">VIEW STATS</button>
+        </div>
+        <div class="menu" id="Stats">
+            <h1 style="top: -5vw;">Your Statistics</h1>
+            <button class="MMB" id="startButton" style="top: 37.5%" onclick="stopStatic(); start();">START</button>
+            <button class="MMB" id="startButton" style="top: 62.5%" onclick="NavigateToMenu('hi')">VIEW STATS</button>
         </div>
     </body>
 </html>
