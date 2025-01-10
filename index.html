@@ -42,10 +42,28 @@
                 width: 100%;
                 text-align: center;
             }
+            h3 {
+                position: absolute;
+                font-size: 2.5vw;
+                font-family: "VT323", serif;
+                color: white;
+                z-index: 3;
+                width: 100%;
+                text-align: center;
+            }
+            h4 {
+                position: absolute;
+                font-size: 1.25vw;
+                font-family: "VT323", serif;
+                color: white;
+                z-index: 3;
+                width: 100%;
+                text-align: center;
+            }
             .menu {
                 visibility: hidden;
             }
-            #MainMenu {
+            #mainMenu {
                 visibility: visible;
             }
         </style>
@@ -79,6 +97,7 @@
             }
             function loopStatic(){
                 stepStatic();
+                //console.log('just statced lol');
                 if (staticing){
                     requestAnimationFrame(loopStatic);
                 }else{
@@ -96,16 +115,24 @@
                 document.getElementById(pageID).style.visibility = 'visible';
             }
         </script>
-        <div class="menu" id="MainMenu">
+        <div class="menu" id="mainMenu">
             <h1 style="top: -5vw;">Get Chased</h1>
             <h2 style="top: 6vw">by your Downloads Folder</h2>
             <button class="MMB" id="startButton" style="top: 37.5%" onclick="stopStatic(); start();">START</button>
-            <button class="MMB" id="startButton" style="top: 62.5%" onclick="NavigateToMenu('Stats')">VIEW STATS</button>
+            <button class="MMB" id="statsButton" style="top: 55%" onclick="NavigateToMenu('Stats'); document.getElementById('highScore').innerText = `High Score: ${localStorage.getItem('HighScore')}`; document.getElementById('prevScore').innerText = `Previous Score: ${localStorage.getItem('PevScore')}`;">VIEW STATS</button>
+            <button class="MMB" id="settingsButton" style="top: 72.5%" onclick="NavigateToMenu('Settings')">SETTINGS</button>
         </div>
         <div class="menu" id="Stats">
             <h1 style="top: -5vw;">Your Statistics</h1>
-            <button class="MMB" id="startButton" style="top: 37.5%" onclick="stopStatic(); start();">START</button>
-            <button class="MMB" id="startButton" style="top: 62.5%" onclick="NavigateToMenu('hi')">VIEW STATS</button>
+            <h2 id="highScore" style="top: 10vw">High Score Retrieval Error</h2>
+            <h2 id="prevScore" style="top: 20vw">Previous Score Retrieval Error</h2>
+            <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
+        </div>
+        <div class="menu" id="Settings">
+            <h1 style="top: -5vw;">Game Settings</h1>
+            <h2 style="top: 10vw">Render Quality</h2>
+            <input type="range" min="30" max="640" value="320" id="renderQualitySlider">
+            <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
         </div>
     </body>
 </html>
