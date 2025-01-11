@@ -66,6 +66,16 @@
             #mainMenu {
                 visibility: visible;
             }
+            .MMSlider {
+                appearance: none;
+                accent-color:rgba(255, 55, 0, 0.75);
+                position: absolute;
+                width: 50%;
+                left: 25%;
+                background-color: rgba(255, 55, 0, 0.5);
+                padding: 1vw;
+                
+            }
         </style>
     </head>
 
@@ -131,7 +141,7 @@
         <div class="menu" id="Settings">
             <h1 style="top: -5vw;">Game Settings</h1>
             <h2 style="top: 10vw">Render Quality</h2>
-            <input type="range" min="30" max="640" value="320" id="renderQualitySlider">
+            <input type="range" min="30" max="640" value="320" id="renderQualitySlider" class="MMSlider" style="top: 20vw">
             <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
         </div>
     </body>

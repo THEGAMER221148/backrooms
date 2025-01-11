@@ -9,7 +9,7 @@ let mapHeight = 20;
 let blockSize = 10;
 let plr = {x: (mapWidth*blockSize)*2048+(mapWidth/2)*blockSize-5, y: (mapHeight*blockSize)*2048+(mapHeight/2)*blockSize+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0, moveDirction: 0};
 let FOV = Math.PI/2;
-let QUALITY = document.getElementById("renderQualitySlider").value;
+let QUALITY;
 let keysDown = {};
 let returnQuality = 0.1;
 const WALLHEIGHT = 4000;
@@ -76,6 +76,7 @@ let loadedEntities = [];
 window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
 window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
 function start(){
+    console.log(document.getElementById("renderQualitySlider"));
     QUALITY = document.getElementById("renderQualitySlider").value;
     canvas.style.visibility = 'visible';
     console.log(canvas.style.visibility)
