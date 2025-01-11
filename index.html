@@ -81,14 +81,14 @@
 
     <body style="margin: 0%; background-color: black;">
         <canvas id="gameCanvas" style="left: 0%; width: 100%; image-rendering: pixelated, crisp-edges; position:fixed; visibility: hidden; z-index: 0;">The Game</canvas>
-        <canvas id="redStatic" style="image-rendering: pixelated; position: fixed; z-index: -1;">Red static effect</canvas>
+        <canvas id="redStatic" style="image-rendering: pixelated; position: fixed; z-index: -1; width: 100%;">Red static effect</canvas>
         <script src="InGame.js"></script>
         <script id="staticEffectScript">
             const effectCanvas = document.getElementById("redStatic")
             const ctx2 = effectCanvas.getContext("2d");
             let staticing = true;
-            effectCanvas.width = window.innerWidth;
-            effectCanvas.height = window.innerHeight;
+            effectCanvas.width = 1600;
+            effectCanvas.height = 1200;
             let staticSize = 20;
 
             window.addEventListener("resize", function(){
