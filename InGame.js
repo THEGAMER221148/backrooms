@@ -85,10 +85,10 @@ function start(){
     if(!started){
         started = true;
         loadedEntities = [
-            new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75, plr.x + 120, plr.y + 0, 1),
-            new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
-            new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
-            new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.095, 100, 15, 10, 1),
+            // new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75, plr.x + 120, plr.y + 0, 1),
+            // new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
+            // new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
+            // new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.095, 100, 15, 10, 1),
         ]
         requestAnimationFrame(step);
         for(let i = 0; i < loadedEntities.length; i++){
@@ -148,7 +148,7 @@ function render(){
     let drawIDX = 0;
     let insertX = 0;
     for(i = 1; i < QUALITY+1; i++){
-        let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.1);
+        let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.5);
         r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
         drawIDX = 1;
         while(temporaryRaycastData[drawIDX-1].dist < r.dist){
@@ -306,15 +306,17 @@ function moveEntities(){
 
 function castRay(X, Y, D, quality){
     let ray = {hit: {x: X, y: Y}, dist: 0};
+    let dSin = Math.sin(D);
+    let dCos = Math.cos(D);
     let collided = false;
-    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && getTileAt(ray.hit.x-quality, ray.hit.y) == 0 && ray.dist < 255 && !collided){
-        ray.hit.x += Math.sin(D)*quality;
-        ray.hit.y += Math.cos(D)*quality;
+    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && ray.dist < 255 && !collided){
+        ray.hit.x += dSin*quality;
+        ray.hit.y += dCos*quality;
         ray.dist += quality;
     }
     while (getTileAt(ray.hit.x, ray.hit.y) != 0 && !collided){
-        ray.hit.x -= Math.sin(D)*returnQuality;
-        ray.hit.y -= Math.cos(D)*returnQuality;
+        ray.hit.x -= dSin*returnQuality;
+        ray.hit.y -= dCos*returnQuality;
         ray.dist -= returnQuality;
     }
     return ray
