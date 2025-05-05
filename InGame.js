@@ -9,7 +9,7 @@ let mapHeight = 20;
 let blockSize = 10;
 let plr = {x: (mapWidth*blockSize)*2048+(mapWidth/2)*blockSize-5, y: (mapHeight*blockSize)*2048+(mapHeight/2)*blockSize+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0, moveDirction: 0};
 let FOV = Math.PI/2;
-let QUALITY;
+let QUALITY = 128;
 let keysDown = {};
 let returnQuality = 0.1;
 const WALLHEIGHT = 4000;
@@ -76,8 +76,27 @@ let loadedEntities = [];
 window.addEventListener("keydown", function(input){keysDown[input.key.toLowerCase()] = true;});
 window.addEventListener("keyup", function(input){keysDown[input.key.toLowerCase()] = false;});
 function start(){
-    console.log(document.getElementById("renderQualitySlider"));
-    QUALITY = document.getElementById("renderQualitySlider").value;
+    console.log(document.getElementById("qualityButton"));
+    console.log(document.getElementById('qualityButton').innerHTML);
+    switch (document.getElementById('qualityButton').innerHTML) {
+        case "UNPLAYABLE":
+            QUALITY = 32;
+            break;
+        
+        case "LOW":
+            QUALITY = 64;
+            break;
+
+        case "MEDIUM":
+            QUALITY = 128;
+            break;
+
+        case "HIGH":
+            QUALITY = 256;
+            break;
+
+        default: QUALITY = 32; break;
+    }
     canvas.style.visibility = 'visible';
     console.log(canvas.style.visibility)
     document.getElementById("mainMenu").style.visibility = 'hidden';
@@ -103,7 +122,7 @@ function start(){
         }, 2000);
     }
 }
-window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY});
+window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY; mouseX += mouseDX;});
 function getDistanceFrom(x1, y1, x2, y2){
     return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
 }
@@ -201,7 +220,7 @@ function moveEntities(){
     }else if(plr.d > Math.PI*2){
         plr.d = 0;
     }
-    plr.d = Math.floor(plr.d/(FOV/QUALITY))*(FOV/QUALITY);
+    plr.d = Math.round(plr.d/(FOV/QUALITY))*(FOV/QUALITY);
     plr.moveDirction = plr.d;
     if(keysDown['w']){
         moving = true;
@@ -309,7 +328,7 @@ function castRay(X, Y, D, quality){
     let dSin = Math.sin(D);
     let dCos = Math.cos(D);
     let collided = false;
-    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && ray.dist < 255 && !collided){
+    while (getTileAt(ray.hit.x+0.05, ray.hit.y) == 0 && getTileAt(ray.hit.x-0.05, ray.hit.y) == 0 && getTileAt(ray.hit.x, ray.hit.y+0.05) == 0 && getTileAt(ray.hit.x, ray.hit.y-0.05) == 0 && ray.dist < 255 && !collided){
         ray.hit.x += dSin*quality;
         ray.hit.y += dCos*quality;
         ray.dist += quality;

@@ -30,10 +30,10 @@
                 position: absolute;
                 height: 6.25%;
                 border-radius: 0.5vw;
-                background-color: rgba(43, 9, 0, 0.5);
-                border-color: rgba(123, 27, 0, 0.75);
+                background-color: rgba(255, 55, 0, 0.5);
+                border-color: rgba(255, 55, 0, 0.75);
                 border-width: 5px;
-                font-size: 4vw;
+                font-size: 3vw;
                 font-family: "VT323", serif;
                 color: rgba(25 0, 0, 0.75);
                 z-index: 4;
@@ -157,7 +157,28 @@
         <div class="menu" id="Settings">
             <h1 style="top: -5vw;">Game Settings</h1>
             <h2 style="top: 10vw">Render Quality</h2>
-            <button class="ToggleSetting" id="qualityButton" style="top: 20vw" onclick="NavigateToMenu('mainMenu');">BACK</button>
+            <button class="ToggleSetting" id="qualityButton" style="top: 20vw" onclick="
+                switch (document.getElementById('qualityButton').innerText) {
+                    case 'MEDIUM':
+                        document.getElementById('qualityButton').innerText = 'HIGH';
+                        break;
+                    
+                    case 'HIGH':
+                        document.getElementById('qualityButton').innerText = 'UNPLAYABLE';
+                        break;
+                
+                    case 'UNPLAYABLE':
+                        document.getElementById('qualityButton').innerText = 'LOW';
+                        break;
+                
+                    case 'LOW':
+                        document.getElementById('qualityButton').innerText = 'MEDIUM';
+                        break;
+                
+                    default:
+                        break;
+                }
+            ">MEDIUM</button>
             <!-- <input type="range" min="32" max="512" value="128" id="renderQualitySlider" class="MMSlider" style="top: 20vw"> -->
             <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
         </div>
