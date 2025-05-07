@@ -7,7 +7,7 @@ ctx.antiAliasing = false;
 let mapWidth = 20;
 let mapHeight = 20;
 let blockSize = 10;
-let plr = {x: (mapWidth*blockSize)*2048+(mapWidth/2)*blockSize-5, y: (mapHeight*blockSize)*2048+(mapHeight/2)*blockSize+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0, moveDirction: 0};
+let plr = {x: (mapWidth*blockSize)*2048+(mapWidth/2)*blockSize-5, y: (mapHeight*blockSize)*2048+(mapHeight/2)*blockSize+5, d: 0, vx: 0, vy: 0, radius: 1, moveSpeed: 0, moveDirction: 0, alive: false};
 let FOV = Math.PI/2;
 let QUALITY = 128;
 let keysDown = {};
@@ -48,6 +48,19 @@ class Entity {
         this.type = 'entity';
         this.vx = 0;
         this.vy = 0;
+    }
+}
+class ExitPortal {
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+    }
+    spawn(){
+        this.x = plr.x + (Math.random()-0.5)*400;
+        this.y = plr.y + (Math.random()-0.5)*400;
+        if(getDistanceFrom(this.x, this.y, plr.x, plr.y) < 100){
+            this.spawn();
+        }
     }
 }
 let map = [
@@ -102,13 +115,16 @@ function start(){
     document.getElementById("mainMenu").style.visibility = 'hidden';
     canvas.requestPointerLock();
     if(!started){
+        plr.alive = true;
         started = true;
         loadedEntities = [
-            // new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75, plr.x + 120, plr.y + 0, 1),
-            // new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
-            // new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
-            // new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.095, 100, 15, 10, 1),
-        ]
+            new ExitPortal(0, 0),
+            new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75, plr.x + 120, plr.y + 0, 1),
+            new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
+            new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
+            new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.08, 100, 15, 10, 1),
+        ];
+        loadedEntities[0].spawn();
         requestAnimationFrame(step);
         for(let i = 0; i < loadedEntities.length; i++){
             loadedEntities[i].sound.playbackRate = 16;
@@ -309,6 +325,7 @@ function moveEntities(){
             }
             localStorage.setItem("PevScore", score);
             loadedEntities = [];
+            new Audio("./assets/vine boom.mp3").play();
             location.reload();
         }
 
@@ -362,12 +379,3 @@ function step(){
     ctx.fillText('Score: ' + score, 50, 50);
     requestAnimationFrame(step);
 }
-// ctx.fillStyle = 'black';
-// ctx.fillRect(0, 0, canvas.width, canvas.height);
-// ctx.font = "200px Arial";
-// ctx.fillStyle = 'white';
-// ctx.fillText('Click to begin', 0, 200, canvas.width);
-// ctx.font = "150px Arial";
-// ctx.fillText('High Score: ' + pB, 0, 400, canvas.width);
-// ctx.fillText("Previous Score: " + localStorage.getItem("PevScore"), 0, 600, canvas.width)
-// ctx.font = "50px Arial";
