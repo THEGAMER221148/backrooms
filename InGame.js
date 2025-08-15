@@ -140,7 +140,7 @@ function start(){
 }
 window.addEventListener("mousemove", function(event){mouseDX = event.movementX; mouseDY = event.movementY; mouseY += mouseDY; mouseX += mouseDX;});
 function getDistanceFrom(x1, y1, x2, y2){
-    return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    return Math.sqrt(Math.abs((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)));
 }
 
 function getTileAt(x, y){
@@ -197,13 +197,15 @@ function render(){
     }
     for(i = 0; i < loadedEntities.length; i++){
         let dist = getDistanceFrom(plr.x, plr.y, loadedEntities[i].x, loadedEntities[i].y);
-        let insertX = 0;
         drawIDX = 1;
-        while(temporaryRaycastData[drawIDX-1] != undefined && (temporaryRaycastData[drawIDX-1].dist < dist || temporaryRaycastData[drawIDX].type == 'entity')){
+        while(temporaryRaycastData[drawIDX-1].dist < dist){
             drawIDX --;
         }
-        while(temporaryRaycastData[drawIDX] != undefined && (temporaryRaycastData[drawIDX].dist > dist || temporaryRaycastData[drawIDX].type == 'entity')){
+        while(temporaryRaycastData[drawIDX].dist > dist){
             drawIDX ++;
+        }
+        if(dist == NaN){
+            console.error(`Entity "${loadedEntities[i]}" has a distance of NaN!`);
         }
         temporaryRaycastData.splice(drawIDX, 0, loadedEntities[i])
     }
