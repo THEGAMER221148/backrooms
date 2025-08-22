@@ -126,13 +126,13 @@ function start(){
         ];
         loadedEntities[0].spawn();
         requestAnimationFrame(step);
-        for(let i = 0; i < loadedEntities.length; i++){
+        for(let i = 1; i < loadedEntities.length; i++){
             loadedEntities[i].sound.playbackRate = 16;
             loadedEntities[i].sound.volume = 0;
             loadedEntities[i].sound.play();
             }
         setTimeout(function(){
-            for(let i = 0; i < loadedEntities.length; i++){
+            for(let i = 1; i < loadedEntities.length; i++){
                 loadedEntities[i].sound.playbackRate = 1;
             }
         }, 2000);
@@ -195,20 +195,27 @@ function render(){
         temporaryRaycastData.splice(drawIDX, 0, {dist: r.dist, x: insertX, type: 'wall'});
         insertX += (canvas.width/QUALITY);
     }
-    for(i = 0; i < loadedEntities.length; i++){
-        let dist = getDistanceFrom(plr.x, plr.y, loadedEntities[i].x, loadedEntities[i].y);
-        drawIDX = 1;
-        while(temporaryRaycastData[drawIDX-1].dist < dist){
-            drawIDX --;
-        }
-        while(temporaryRaycastData[drawIDX].dist > dist){
-            drawIDX ++;
-        }
-        if(dist == NaN){
-            console.error(`Entity "${loadedEntities[i]}" has a distance of NaN!`);
-        }
-        temporaryRaycastData.splice(drawIDX, 0, loadedEntities[i])
+    for (let i = 1; i < loadedEntities.length; i++) {
+        const e = loadedEntities[i];
+
+        // Perpendicular distance to the camera plane (matches wall metric)
+        const dx = e.x - plr.x;
+        const dy = e.y - plr.y;
+        const distPerp = dx * Math.sin(plr.d) + dy * Math.cos(plr.d);
+
+        // Don’t draw/sort entities that are behind the player
+        if (distPerp <= 0 || Number.isNaN(distPerp)) continue;
+
+        // Give the entity a .dist so sorting works with walls
+        e.dist = distPerp;
+
+        let drawIDX = 1;
+        while (temporaryRaycastData[drawIDX - 1].dist < e.dist) drawIDX--;
+        while (temporaryRaycastData[drawIDX] !== undefined && temporaryRaycastData[drawIDX].dist > e.dist) drawIDX++;
+
+        temporaryRaycastData.splice(drawIDX, 0, e);
     }
+
     //render walls and entities
     for(i = 0; i < temporaryRaycastData.length; i++){
         if(temporaryRaycastData[i].type == 'wall'){
