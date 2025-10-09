@@ -159,20 +159,24 @@
             <h2 style="top: 10vw">Render Quality</h2>
             <button class="ToggleSetting" id="qualityButton" style="top: 20vw" onclick="
                 switch (document.getElementById('qualityButton').innerText) {
-                    case 'MEDIUM':
-                        document.getElementById('qualityButton').innerText = 'HIGH';
-                        break;
-                    
-                    case 'HIGH':
-                        document.getElementById('qualityButton').innerText = 'UNPLAYABLE';
-                        break;
-                
                     case 'UNPLAYABLE':
                         document.getElementById('qualityButton').innerText = 'LOW';
                         break;
                 
                     case 'LOW':
                         document.getElementById('qualityButton').innerText = 'MEDIUM';
+                        break;
+
+                    case 'MEDIUM':
+                        document.getElementById('qualityButton').innerText = 'HIGH';
+                        break;
+                    
+                    case 'HIGH':
+                        document.getElementById('qualityButton').innerText = 'ULTRA';
+                        break;
+
+                    case 'ULTRA':
+                        document.getElementById('qualityButton').innerText = 'UNPLAYABLE';
                         break;
                 
                     default:
