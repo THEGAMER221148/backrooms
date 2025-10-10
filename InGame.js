@@ -24,6 +24,7 @@ let dv = (canvas.width/2)/Math.tan(FOV/2);
 let started = false;
 let temporaryRaycastData = [];
 let score = 0;
+let sensitivity = 0.01;
 const RESISTANCE = 1.2;
 if(Number(localStorage.getItem("HighScore")) == NaN){
     localStorage.setItem("HighScore", 0);
@@ -114,6 +115,7 @@ function start(){
 
         default: QUALITY = 128; break;
     }
+    sensitivity = document.getElementById("sensitivityInput").value / 100 / 100
     canvas.style.visibility = 'visible';
     console.log(canvas.style.visibility)
     document.getElementById("mainMenu").style.visibility = 'hidden';
@@ -243,7 +245,7 @@ function render(){
 
 function moveEntities(){
     let moving = false;
-    plr.d -= mouseDX/100;
+    plr.d -= mouseDX * sensitivity;
     if(plr.d < 0){
         plr.d = Math.PI*2;
     }else if(plr.d > Math.PI*2){

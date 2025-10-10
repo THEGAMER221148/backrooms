@@ -103,8 +103,9 @@
             const effectCanvas = document.getElementById("redStatic")
             const ctx2 = effectCanvas.getContext("2d");
             let staticing = true;
-            effectCanvas.width = 1600;
-            effectCanvas.height = 1200;
+
+            effectCanvas.width = window.innerWidth;
+            effectCanvas.height = window.innerHeight;
             let staticSize = 20;
 
             window.addEventListener("resize", function(){
@@ -156,8 +157,8 @@
         </div>
         <div class="menu" id="Settings">
             <h1 style="top: -5vw;">Game Settings</h1>
-            <h2 style="top: 10vw">Render Quality</h2>
-            <button class="ToggleSetting" id="qualityButton" style="top: 20vw" onclick="
+            <h2 style="top: 5vw">Render Quality</h2>
+            <button class="ToggleSetting" id="qualityButton" style="top: 15vw" onclick="
                 switch (document.getElementById('qualityButton').innerText) {
                     case 'UNPLAYABLE':
                         document.getElementById('qualityButton').innerText = 'LOW';
@@ -183,6 +184,9 @@
                         break;
                 }
             ">MEDIUM</button>
+            <h2 style="top: 15vw">Sensitivity</h2>
+            <input type="number" max="200" min="10" value="100" class="ToggleSetting" id="sensitivityInput" style="top: 25vw;"></input>
+            
             <!-- <input type="range" min="32" max="512" value="128" id="renderQualitySlider" class="MMSlider" style="top: 20vw"> -->
             <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
         </div>
