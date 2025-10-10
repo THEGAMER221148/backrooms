@@ -358,7 +358,7 @@ function castRay(X, Y, D, quality){
     let dSin = Math.sin(D);
     let dCos = Math.cos(D);
     let collided = false;
-    while (getTileAt(ray.hit.x+quality, ray.hit.y) == 0 && getTileAt(ray.hit.x-quality, ray.hit.y) == 0 && getTileAt(ray.hit.x, ray.hit.y+quality) == 0 && getTileAt(ray.hit.x, ray.hit.y-quality) == 0 && ray.dist < 255 && !collided){
+    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && ray.dist < 255 && !collided){
         ray.hit.x += dSin*quality;
         ray.hit.y += dCos*quality;
         ray.dist += quality;
