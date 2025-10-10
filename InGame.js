@@ -188,7 +188,7 @@ function render(){
     let insertX = 0;
     for(i = 1; i < QUALITY+1; i++){
         let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.5);
-        //r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
+        r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv)); // THIS IS THE ERROR LINE
         drawIDX = 1;
         while(temporaryRaycastData[drawIDX-1].dist < r.dist){
             drawIDX --;
@@ -354,8 +354,8 @@ function moveEntities(){
 }
 
 function castRay(x, y, D, quality){
-    let rayDirY = Math.sin(D);
-    let rayDirX = Math.cos(D);
+    let rayDirY = Math.cos(D);
+    let rayDirX = Math.sin(D);
     let mapX = Math.floor(x / blockSize);
     let mapY = Math.floor(y / blockSize);
     const deltaXDist = Math.abs(blockSize / rayDirX);
@@ -375,7 +375,7 @@ function castRay(x, y, D, quality){
         sideDistY = (y - mapY * blockSize) * deltaYDist / blockSize;
     } else {
         stepY = 1;
-        sideDistX = ((mapY + 1) * blockSize - y) * deltaYDist / blockSize;
+        sideDistY = ((mapY + 1) * blockSize - y) * deltaYDist / blockSize;
     }
 
     let hit = false;
