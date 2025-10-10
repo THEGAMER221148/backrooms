@@ -188,7 +188,7 @@ function render(){
     let insertX = 0;
     for(i = 1; i < QUALITY+1; i++){
         let r = castRay(plr.x, plr.y, plr.d-Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv), 0.5);
-        r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
+        //r.dist *= Math.cos(Math.atan((i*(canvas.width/QUALITY)-canvas.width/2)/dv));
         drawIDX = 1;
         while(temporaryRaycastData[drawIDX-1].dist < r.dist){
             drawIDX --;
@@ -353,22 +353,63 @@ function moveEntities(){
     }
 }
 
-function castRay(X, Y, D, quality){
-    let ray = {hit: {x: X, y: Y}, dist: 0};
-    let dSin = Math.sin(D);
-    let dCos = Math.cos(D);
-    let collided = false;
-    while (getTileAt(ray.hit.x, ray.hit.y) == 0 && ray.dist < 255 && !collided){
-        ray.hit.x += dSin*quality;
-        ray.hit.y += dCos*quality;
-        ray.dist += quality;
+function castRay(x, y, D, quality){
+    let rayDirY = Math.sin(D);
+    let rayDirX = Math.cos(D);
+    let mapX = Math.floor(x / blockSize);
+    let mapY = Math.floor(y / blockSize);
+    const deltaXDist = Math.abs(blockSize / rayDirX);
+    const deltaYDist = Math.abs(blockSize / rayDirY);
+    let stepX, stepY, sideDistX, sideDistY;
+
+    if (rayDirX < 0) {
+        stepX = -1;
+        sideDistX = (x - mapX * blockSize) * deltaXDist / blockSize;
+    } else {
+        stepX = 1;
+        sideDistX = ((mapX + 1) * blockSize - x) * deltaXDist / blockSize;
     }
-    while (getTileAt(ray.hit.x, ray.hit.y) != 0 && !collided){
-        ray.hit.x -= dSin*returnQuality;
-        ray.hit.y -= dCos*returnQuality;
-        ray.dist -= returnQuality;
+
+    if (rayDirY < 0) {
+        stepY = -1;
+        sideDistY = (y - mapY * blockSize) * deltaYDist / blockSize;
+    } else {
+        stepY = 1;
+        sideDistX = ((mapY + 1) * blockSize - y) * deltaYDist / blockSize;
     }
-    return ray
+
+    let hit = false;
+    let side = 0;
+    
+    while (!hit) {
+        if (sideDistX < sideDistY){
+            sideDistX += deltaXDist;
+            mapX += stepX;
+            side = 0;
+        } else {
+            sideDistY += deltaYDist;
+            mapY += stepY;
+            side = 1;
+        }
+
+        const worldX = mapX * blockSize + blockSize / 2;
+        const worldY = mapY * blockSize + blockSize / 2;
+
+        hit = (getTileAt(worldX, worldY) !== 0);
+    }
+
+    let dist;
+    if (side === 0) {
+        dist = ((mapX * blockSize) - x + (1 - stepX) * blockSize / 2) / rayDirX;
+    } else {
+        dist = ((mapY * blockSize) - y + (1 - stepY) * blockSize / 2) / rayDirY;
+    }
+
+    return {
+        hit: {x: x + rayDirX * dist, y: y + rayDirY * dist},
+        dist: dist,
+        side: side,
+    }
 }
 
 function step(){
