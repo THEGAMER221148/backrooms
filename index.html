@@ -24,6 +24,11 @@
                 z-index: 4;
                 border-style:solid;
             }
+
+            .MMB:hover {
+                border-color: rgba(255,255,255,1);
+            }
+
             .ToggleSetting {
                 width: 25%;
                 left: 37.5%;
@@ -145,9 +150,21 @@
         <div class="menu" id="mainMenu">
             <h1 style="top: -5vw;">Get Chased</h1>
             <h2 style="top: 6vw">by your Downloads Folder</h2>
-            <button class="MMB" id="startButton" style="top: 37.5%" onclick="stopStatic(); start();">START</button>
+            <button class="MMB" id="startButton" style="top: 37.5%" onclick="NavigateToMenu('startMenu');">START</button>
             <button class="MMB" id="statsButton" style="top: 55%" onclick="NavigateToMenu('Stats'); document.getElementById('highScore').innerText = `High Score: ${localStorage.getItem('HighScore')}`; document.getElementById('prevScore').innerText = `Previous Score: ${localStorage.getItem('PevScore')}`;">VIEW STATS</button>
             <button class="MMB" id="settingsButton" style="top: 72.5%" onclick="NavigateToMenu('Settings')">SETTINGS</button>
+        </div>
+        <div class="menu" id="startMenu">
+            <h1 style="top: -5vw;">Play Options</h1>
+            <h2 style="top: 6vw">Either join an active room code, or start a new game yourself.</h2>
+            <button class="MMB" id="newGameButton" style="top: 37.5%" onclick="NavigateToMenu('setMenu');">NEW GAME</button>
+            <button class="MMB" id="joinGameButton" style="top: 55%" onclick="">JOIN GAME</button>
+            <button class="MMB" id="returnButton" style="top: 72.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
+        </div>
+        <div class="menu" id="setMenu">
+            <h1 style="top: -5vw;">Configure Game</h1>
+            <h2 style="top: 6vw">Modify entities and round settings.</h2>
+            <button class="MMB" id="playGameButton" style="top: 81.25%" onclick="stopStatic(); start();">START GAME</button>
         </div>
         <div class="menu" id="Stats">
             <h1 style="top: -5vw;">Your Statistics</h1>

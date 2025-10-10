@@ -106,7 +106,9 @@ function start(){
     sensitivity = document.getElementById("sensitivityInput").value / 100 / 100
     canvas.style.visibility = 'visible';
     console.log(canvas.style.visibility)
-    document.getElementById("mainMenu").style.visibility = 'hidden';
+    document.querySelectorAll('.menu').forEach(el => {
+        el.style.visibility = 'hidden';
+    });
     canvas.requestPointerLock();
     if(!started){
         plr.alive = true;
