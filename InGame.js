@@ -132,6 +132,7 @@ function start(){
             new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
             new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
             new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.08, 100, 15, 10, 1),
+            new Entity('assets/Get Chased Guy Single.png', '', 0.04, 100, 15, 10, 1),
         ];
         requestAnimationFrame(step);
         for(let i = 1; i < loadedEntities.length; i++){
