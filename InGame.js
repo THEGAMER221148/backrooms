@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 canvas.width = 1280;
 canvas.height = 720;
+canvas.widthToHeightRatio = canvas.width / canvas.height;
 ctx.antiAliasing = false;
 let mapWidth = 20;
 let mapHeight = 20;
@@ -29,8 +30,21 @@ const RESISTANCE = 1.2;
 if(Number(localStorage.getItem("HighScore")) == NaN){
     localStorage.setItem("HighScore", 0);
 }
+function resize() {
+    if (window.innerWidth / window.innerHeight > canvas.widthToHeightRatio) {
+        canvas.style.height = "100%";
+        canvas.style.width = window.innerHeight * canvas.widthToHeightRatio + "px";
+    } else {
+        canvas.style.width = "100%";
+        canvas.style.height = window.innerWidth / canvas.widthToHeightRatio + "px";;
+    }
+}
+resize();
+window.addEventListener("resize", (event) => {
+    resize();
+});
 let pB = Math.round(Number(localStorage.getItem("HighScore")));
-const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
 grad.addColorStop(0, 'rgb(128, 128, 128)');
 grad.addColorStop(0.5, "black");
 grad.addColorStop(1, 'rgb(128, 96, 32)');

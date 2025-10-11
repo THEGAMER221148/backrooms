@@ -97,14 +97,86 @@
                 height: 100px;
                 
             }
+
+            #gameCanvas {
+                position: absolute;
+                left: 0%;
+                top: 0%;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                image-rendering: pixelated, crisp-edges, -moz-crisp-edges;
+                z-index: 0;
+            }
         </style>
     </head>
 
     <body style="margin: 0%; background-color: black;">
-        <canvas id="gameCanvas" style="left: 0%; width: 100%; image-rendering: pixelated, crisp-edges; position:fixed; visibility: hidden; z-index: 0;">The Game</canvas>
+        <canvas id="gameCanvas">The Game</canvas>
         <canvas id="redStatic" style="image-rendering: pixelated; position: fixed; z-index: -1; width: 100%;">Red static effect</canvas>
         <script src="InGame.js"></script>
-        <script id="staticEffectScript">
+        <div class="menu" id="mainMenu">
+            <h1 style="top: -5vw;">Get Chased</h1>
+            <h2 style="top: 6vw">by your Downloads Folder</h2>
+            <button class="MMB" id="startButton" style="top: 37.5%" onclick="NavigateToMenu('startMenu');">START</button>
+            <button class="MMB" id="statsButton" style="top: 55%" onclick="NavigateToMenu('Stats'); document.getElementById('highScore').innerText = `High Score: ${localStorage.getItem('HighScore')}`; document.getElementById('prevScore').innerText = `Previous Score: ${localStorage.getItem('PevScore')}`;">VIEW STATS</button>
+            <button class="MMB" id="settingsButton" style="top: 72.5%" onclick="NavigateToMenu('Settings')">SETTINGS</button>
+        </div>
+        <div class="menu" id="startMenu">
+            <h1 style="top: -5vw;">Play Options</h1>
+            <h2 style="top: 6vw">Either join an active room code, or start a new game yourself.</h2>
+            <button class="MMB" id="newGameButton" style="top: 37.5%" onclick="NavigateToMenu('setMenu');">NEW GAME</button>
+            <button class="MMB" id="joinGameButton" style="top: 55%" onclick="">JOIN GAME</button>
+            <button class="MMB" id="returnButton" style="top: 72.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
+        </div>
+        <div class="menu" id="setMenu">
+            <h1 style="top: -5vw;">Configure Game</h1>
+            <h2 style="top: 6vw">Modify entities and round settings.</h2>
+            <button class="MMB" id="playGameButton" style="top: 81.25%" onclick="stopStatic(); start();">START GAME</button>
+        </div>
+        <div class="menu" id="Stats">
+            <h1 style="top: -5vw;">Your Statistics</h1>
+            <h2 id="highScore" style="top: 10vw">High Score Retrieval Error</h2>
+            <h2 id="prevScore" style="top: 20vw">Previous Score Retrieval Error</h2>
+            <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
+        </div>
+        <div class="menu" id="Settings">
+            <h1 style="top: -5vw;">Game Settings</h1>
+            <h2 style="top: 5vw">Render Quality</h2>
+            <button class="ToggleSetting" id="qualityButton" style="top: 15vw" onclick="
+                switch (this.innerText) {
+                    case 'UNPLAYABLE':
+                        this.innerText = 'LOW';
+                        break;
+                
+                    case 'LOW':
+                        this.innerText = 'MEDIUM';
+                        break;
+
+                    case 'MEDIUM':
+                        this.innerText = 'HIGH';
+                        break;
+                    
+                    case 'HIGH':
+                        this.innerText = 'ULTRA';
+                        break;
+
+                    case 'ULTRA':
+                        this.innerText = 'UNPLAYABLE';
+                        break;
+                
+                    default:
+                        break;
+                }
+                localStorage.setItem('userRenderQuality', this.innerText);
+            ">MEDIUM</button>
+            <h2 style="top: 15vw">Sensitivity</h2>
+            <input type="number" max="200" min="10" value="100" class="ToggleSetting" id="sensitivityInput" style="top: 25vw;" oninput="localStorage.setItem('userSensitivity', this.value);"></input>
+            
+            <!-- <input type="range" min="32" max="512" value="128" id="renderQualitySlider" class="MMSlider" style="top: 20vw"> -->
+            <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
+
+            <script id="staticEffectScript">
             const effectCanvas = document.getElementById("redStatic")
             const ctx2 = effectCanvas.getContext("2d");
             let staticing = true;
@@ -112,6 +184,13 @@
             effectCanvas.width = window.innerWidth;
             effectCanvas.height = window.innerHeight;
             let staticSize = 20;
+
+            if (localStorage.getItem("userRenderQuality") !== null){
+                document.getElementById("qualityButton").innerText = localStorage.getItem("userRenderQuality");
+            }
+            if (localStorage.getItem("userSensitivity") !== null){
+                document.getElementById("sensitivityInput").value = localStorage.getItem("userSensitivity");
+            }
 
             window.addEventListener("resize", function(){
                 effectCanvas.width = window.innerWidth;
@@ -147,65 +226,6 @@
                 document.getElementById(pageID).style.visibility = 'visible';
             }
         </script>
-        <div class="menu" id="mainMenu">
-            <h1 style="top: -5vw;">Get Chased</h1>
-            <h2 style="top: 6vw">by your Downloads Folder</h2>
-            <button class="MMB" id="startButton" style="top: 37.5%" onclick="NavigateToMenu('startMenu');">START</button>
-            <button class="MMB" id="statsButton" style="top: 55%" onclick="NavigateToMenu('Stats'); document.getElementById('highScore').innerText = `High Score: ${localStorage.getItem('HighScore')}`; document.getElementById('prevScore').innerText = `Previous Score: ${localStorage.getItem('PevScore')}`;">VIEW STATS</button>
-            <button class="MMB" id="settingsButton" style="top: 72.5%" onclick="NavigateToMenu('Settings')">SETTINGS</button>
-        </div>
-        <div class="menu" id="startMenu">
-            <h1 style="top: -5vw;">Play Options</h1>
-            <h2 style="top: 6vw">Either join an active room code, or start a new game yourself.</h2>
-            <button class="MMB" id="newGameButton" style="top: 37.5%" onclick="NavigateToMenu('setMenu');">NEW GAME</button>
-            <button class="MMB" id="joinGameButton" style="top: 55%" onclick="">JOIN GAME</button>
-            <button class="MMB" id="returnButton" style="top: 72.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
-        </div>
-        <div class="menu" id="setMenu">
-            <h1 style="top: -5vw;">Configure Game</h1>
-            <h2 style="top: 6vw">Modify entities and round settings.</h2>
-            <button class="MMB" id="playGameButton" style="top: 81.25%" onclick="stopStatic(); start();">START GAME</button>
-        </div>
-        <div class="menu" id="Stats">
-            <h1 style="top: -5vw;">Your Statistics</h1>
-            <h2 id="highScore" style="top: 10vw">High Score Retrieval Error</h2>
-            <h2 id="prevScore" style="top: 20vw">Previous Score Retrieval Error</h2>
-            <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
-        </div>
-        <div class="menu" id="Settings">
-            <h1 style="top: -5vw;">Game Settings</h1>
-            <h2 style="top: 5vw">Render Quality</h2>
-            <button class="ToggleSetting" id="qualityButton" style="top: 15vw" onclick="
-                switch (document.getElementById('qualityButton').innerText) {
-                    case 'UNPLAYABLE':
-                        document.getElementById('qualityButton').innerText = 'LOW';
-                        break;
-                
-                    case 'LOW':
-                        document.getElementById('qualityButton').innerText = 'MEDIUM';
-                        break;
-
-                    case 'MEDIUM':
-                        document.getElementById('qualityButton').innerText = 'HIGH';
-                        break;
-                    
-                    case 'HIGH':
-                        document.getElementById('qualityButton').innerText = 'ULTRA';
-                        break;
-
-                    case 'ULTRA':
-                        document.getElementById('qualityButton').innerText = 'UNPLAYABLE';
-                        break;
-                
-                    default:
-                        break;
-                }
-            ">MEDIUM</button>
-            <h2 style="top: 15vw">Sensitivity</h2>
-            <input type="number" max="200" min="10" value="100" class="ToggleSetting" id="sensitivityInput" style="top: 25vw;"></input>
-            
-            <!-- <input type="range" min="32" max="512" value="128" id="renderQualitySlider" class="MMSlider" style="top: 20vw"> -->
-            <button class="MMB" id="returnButton" style="top: 62.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
         </div>
     </body>
 </html>
