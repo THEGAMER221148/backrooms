@@ -108,6 +108,27 @@
                 image-rendering: pixelated, crisp-edges, -moz-crisp-edges;
                 z-index: 0;
             }
+
+            #entities {
+                position: absolute;
+                left: 5%;
+                width: 90%;
+                top: 10vw;
+                height: 60vh;
+                background-color: rgba(0, 0, 0, 0.5);
+                border-color: rgba(0, 0, 0, 0.75);
+                border-width: 10px;
+                border-style: solid;
+
+            }
+
+            #entityEntry {
+                position: relative;
+                background-color: rgb(0, 0, 0);
+                border-color: rgb(20, 20, 20);
+                border-width: 10px;
+                border-style: solid;
+            }
         </style>
     </head>
 
@@ -130,9 +151,11 @@
             <button class="MMB" id="returnButton" style="top: 72.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
         </div>
         <div class="menu" id="setMenu">
-            <h1 style="top: -5vw;">Configure Game</h1>
-            <h2 style="top: 6vw">Modify entities and round settings.</h2>
-            <div id=""></div>
+            <h1 style="top: -8vw;">Configure Game</h1>
+            <h2 style="top: 2vw">Modify entities and round settings.</h2>
+            <div id="entities">
+                <div class="entityEntry" id="blank"><img src="assets/Blank Entity.png"></div>
+            </div>
             <button class="MMB" id="playGameButton" style="top: 81.25%" onclick="stopStatic(); start();">START GAME</button>
         </div>
         <div class="menu" id="Stats">
