@@ -136,9 +136,10 @@
                 background-color: rgb(15, 15, 15);
                 border: 10px solid rgb(20, 20, 20);
                 width: 10%;
-                display: block;
+                display: inline-block;
                 padding: 8px; /* ensures border wraps both img + text */
                 box-sizing: border-box;
+                margin: 5px;
             }
 
             .entityEntry img {
@@ -186,8 +187,8 @@
         <div class="menu" id="setMenu">
             <h1 style="top: -8vw;">Configure Game</h1>
             <h2 style="top: 2vw">Modify entities and round settings.</h2>
-            <div id="entities" onclick="NavigateToMenu('editEntityMenu');">
-                <div class="entityEntry" id="blank">
+            <div id="entities">
+                <div class="entityEntry" id="blank" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
                     <img class="entityPreview" src="assets/Blank Entity.png" >
                     <p>New Entity...</p>
                 </div>
@@ -293,6 +294,11 @@
             }
 
             function setupCustomizationMenu(entity){
+                console.log(entity.id);
+                if (entity.id == "blank") {
+                    entity = entity.cloneNode(true);
+                    document.getElementById("entities").append(entity);
+                }
                 const menu = document.getElementById("editEntityMenu");
             }
         </script>
