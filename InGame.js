@@ -128,10 +128,10 @@ function start(){
         plr.alive = true;
         started = true;
         loadedEntities = [
-            new Entity('assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75, plr.x + 120, plr.y + 0, 1),
-            new Entity('assets/Chatticussabluddington.webp', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
-            new Entity('assets/nred.jpg', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
-            new Entity('assets/kee surhg.jpg', 'assets/kee.mp3', 0.08, 100, 15, 10, 1),
+            new Entity('assets/fsh.png', 'assets/goofy-ahh-song.mp3', 0.06, 75, plr.x + 120, plr.y + 0, 1),
+            new Entity('assets/Chatticussabluddington.png', 'assets/chat.mp3', 0.04, 50, plr.x + 0, plr.y - 120, 1),
+            new Entity('assets/nred.png', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
+            new Entity('assets/kee surhg.png', 'assets/kee.mp3', 0.08, 100, 15, 10, 1),
         ];
         requestAnimationFrame(step);
         for(let i = 1; i < loadedEntities.length; i++){

@@ -135,7 +135,8 @@
                 position: relative;
                 background-color: rgb(15, 15, 15);
                 border: 10px solid rgb(20, 20, 20);
-                width: 10%;
+                width: 15%;
+                max-height: 50%;
                 display: inline-block;
                 padding: 8px; /* ensures border wraps both img + text */
                 box-sizing: border-box;
@@ -146,7 +147,7 @@
                 display: block;
                 width: 100%;
                 image-rendering: pixelated;
-                margin-bottom: 8px;
+                margin-bottom: 6px;
             }
 
             .entityEntry p {
@@ -188,10 +189,32 @@
             <h1 style="top: -8vw;">Configure Game</h1>
             <h2 style="top: 2vw">Modify entities and round settings.</h2>
             <div id="entities">
+
+                <div class="entityEntry" id="fih" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
+                    <img class="entityPreview" src="assets/fsh.png" >
+                    <p>fih</p>
+                </div>
+
+                <div class="entityEntry" id="chat" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
+                    <img class="entityPreview" src="assets/Chatticussabluddington.png" >
+                    <p>chat</p>
+                </div>
+
+                <div class="entityEntry" id="blue grinch" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
+                    <img class="entityPreview" src="assets/kee surhg.png" >
+                    <p>Blue Grinch</p>
+                </div>
+
+                <div class="entityEntry" id="nerd emoji" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
+                    <img class="entityPreview" src="assets/nred.png" >
+                    <p>Nerd Emoji</p>
+                </div>
+
                 <div class="entityEntry" id="blank" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
                     <img class="entityPreview" src="assets/Blank Entity.png" >
-                    <p>New Entity...</p>
+                    <p>Create New...</p>
                 </div>
+
             </div>
             <button class="MMB" id="playGameButton" style="top: 81.25%" onclick="stopStatic(); start();">START GAME</button>
         </div>
@@ -247,6 +270,12 @@
             const effectCanvas = document.getElementById("redStatic")
             const ctx2 = effectCanvas.getContext("2d");
             let staticing = true;
+            let numEntities = 0;
+            //'assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75
+            const entities = [
+                {image: 'assets/fsh.png', sound: 'assets/goofy-ahh-song.mp3', speed: 0.06, range: 75},
+                {image: 'assets/chatticussabluddington.png', sound: 'assets/chat.mp3', speed: 0.04, range: 50},
+            ];
 
             effectCanvas.width = window.innerWidth;
             effectCanvas.height = window.innerHeight;
@@ -296,11 +325,14 @@
             function setupCustomizationMenu(entity){
                 console.log(entity.id);
                 if (entity.id == "blank") {
+                    numEntities ++;
                     entity = entity.cloneNode(true);
                     document.getElementById("entities").append(entity);
+                    entity.id = "Entity " + numEntities;
                 }
                 const menu = document.getElementById("editEntityMenu");
             }
+
         </script>
         </div>
     </body>
