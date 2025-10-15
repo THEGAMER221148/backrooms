@@ -180,7 +180,7 @@
         <div class="menu" id="startMenu">
             <h1 style="top: -5vw;">Play Options</h1>
             <h2 style="top: 6vw">Join an active room code, or start a new game.</h2>
-            <button class="MMB" id="newGameButton" style="top: 37.5%" onclick="NavigateToMenu('setMenu');">NEW GAME</button>
+            <button class="MMB" id="newGameButton" style="top: 37.5%" onclick="NavigateToMenu('setMenu'); createEntitySelectionMenu();">NEW GAME</button>
             <button class="MMB" id="joinGameButton" style="top: 55%" onclick="">JOIN GAME</button>
             <button class="MMB" id="returnButton" style="top: 72.5%" onclick="NavigateToMenu('mainMenu');">BACK</button>
         </div>
@@ -189,26 +189,6 @@
             <h1 style="top: -8vw;">Configure Game</h1>
             <h2 style="top: 2vw">Modify entities and round settings.</h2>
             <div id="entities">
-
-                <div class="entityEntry" id="fih" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
-                    <img class="entityPreview" src="assets/fsh.png" >
-                    <p>fih</p>
-                </div>
-
-                <div class="entityEntry" id="chat" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
-                    <img class="entityPreview" src="assets/Chatticussabluddington.png" >
-                    <p>chat</p>
-                </div>
-
-                <div class="entityEntry" id="blue grinch" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
-                    <img class="entityPreview" src="assets/kee surhg.png" >
-                    <p>Blue Grinch</p>
-                </div>
-
-                <div class="entityEntry" id="nerd emoji" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
-                    <img class="entityPreview" src="assets/nred.png" >
-                    <p>Nerd Emoji</p>
-                </div>
 
                 <div class="entityEntry" id="blank" onclick="NavigateToMenu('editEntityMenu'); setupCustomizationMenu(this);">
                     <img class="entityPreview" src="assets/Blank Entity.png" >
