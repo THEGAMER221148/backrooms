@@ -220,8 +220,8 @@
         </div>
         
         <div class="menu" id="editEntityMenu">
-            <h1 style="top: -8vw;">Edit "New Entity..."</h1>
-            <button class="MMB" id="returnButton" style="top: 72.5%" onclick="NavigateToMenu('setMenu');">BACK</button>
+            <h1 style="top: -8vw;" id="editTitle">Edit "New Entity..."</h1>
+            <button class="MMB" id="returnButton" style="top: 81.25%" onclick="NavigateToMenu('setMenu'); createEntitySelectionMenu();">BACK</button>
         </div>
 
         <div class="menu" id="Stats">
@@ -269,12 +269,17 @@
             <script id="staticEffectScript">
             const effectCanvas = document.getElementById("redStatic")
             const ctx2 = effectCanvas.getContext("2d");
+            const newEntityButton = document.getElementById("blank").cloneNode(true);
             let staticing = true;
             let numEntities = 0;
             //'assets/fsh.jpg', 'assets/goofy-ahh-song.mp3', 0.06, 75
+            //new Entity('assets/nred.png', 'assets/nerd.mp3', 0.04, 30, plr.x + 60, plr.y + 60, 0.5),
+            //new Entity('assets/kee surhg.png', 'assets/kee.mp3', 0.08, 100, 15, 10, 1),
             const entities = [
-                {image: 'assets/fsh.png', sound: 'assets/goofy-ahh-song.mp3', speed: 0.06, range: 75},
-                {image: 'assets/chatticussabluddington.png', sound: 'assets/chat.mp3', speed: 0.04, range: 50},
+                {name: "Fih", image: 'assets/fsh.png', sound: 'assets/goofy-ahh-song.mp3', speed: 0.06, range: 75},
+                {name: "Chat", image: 'assets/chatticussabluddington.png', sound: 'assets/chat.mp3', speed: 0.04, range: 50},
+                {name: "Nerd Emoji", image: 'assets/nred.png', sound: 'assets/nred.mp3', speed: 0.04, range: 30},
+                {name: "Blue Grinch", image: 'assets/kee surhg.png', sound: 'assets/kee.mp3', speed: 0.08, range: 100},
             ];
 
             effectCanvas.width = window.innerWidth;
@@ -322,15 +327,41 @@
                 document.getElementById(pageID).style.visibility = 'visible';
             }
 
+            function createEntitySelectionMenu(){
+                while (document.getElementById("entities").firstChild) {
+                    document.getElementById("entities").removeChild(document.getElementById("entities").firstChild);
+                }
+                entities.forEach((v) => {
+                    const newDiv = document.createElement("div");
+                    newDiv.className = "entityEntry";
+                    newDiv.id = v.name;
+                    newDiv.onclick = function(){
+                        NavigateToMenu('editEntityMenu');
+                        setupCustomizationMenu(newDiv);
+                    }
+                    const previewImage = document.createElement("img");
+                    previewImage.src = v.image;
+
+                    const piss = document.createElement("p");
+                    piss.innerText = v.name;
+
+                    newDiv.appendChild(previewImage);
+                    newDiv.appendChild(piss);
+                    document.getElementById("entities").appendChild(newDiv);
+                });
+                document.getElementById("entities").appendChild(newEntityButton.cloneNode(true));
+            }
+
             function setupCustomizationMenu(entity){
-                console.log(entity.id);
                 if (entity.id == "blank") {
                     numEntities ++;
-                    entity = entity.cloneNode(true);
-                    document.getElementById("entities").append(entity);
-                    entity.id = "Entity " + numEntities;
+                    entityClone = entity.cloneNode(true);
+                    entity = entityClone;
+                    entity.id = "Entity " + entities.length;
+                    console.log(entity.id);
                 }
                 const menu = document.getElementById("editEntityMenu");
+                document.getElementById("editTitle").innerText = 'Edit "' + entity.id + '"'
             }
 
         </script>
