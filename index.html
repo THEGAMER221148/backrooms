@@ -221,6 +221,7 @@
         
         <div class="menu" id="editEntityMenu">
             <h1 style="top: -8vw;" id="editTitle">Edit "New Entity..."</h1>
+            <img src="assets/Blank Entity.png">
             <button class="MMB" id="returnButton" style="top: 81.25%" onclick="NavigateToMenu('setMenu'); createEntitySelectionMenu();">BACK</button>
         </div>
 
@@ -354,11 +355,8 @@
 
             function setupCustomizationMenu(entity){
                 if (entity.id == "blank") {
-                    numEntities ++;
-                    entityClone = entity.cloneNode(true);
-                    entity = entityClone;
-                    entity.id = "Entity " + entities.length;
-                    console.log(entity.id);
+                    newEntityObject = {name: "Entity" + entities.length, image: 'assets/Blank Entity.png', sound: '', speed: 0.06, range: 100};
+                    entities.push(newEntityObject);
                 }
                 const menu = document.getElementById("editEntityMenu");
                 document.getElementById("editTitle").innerText = 'Edit "' + entity.id + '"'
