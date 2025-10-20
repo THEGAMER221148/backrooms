@@ -201,8 +201,11 @@
         
         <div class="menu" id="editEntityMenu">
             <h1 style="top: -8vw;" id="editTitle">Edit "New Entity..."</h1>
-            <img src="assets/Blank Entity.png" style="position: absolute; top: 50%;">
-            <button class="MMB" id="returnButton" style="top: 81.25%" onclick="NavigateToMenu('setMenu'); createEntitySelectionMenu();">BACK</button>
+            
+            <img src="assets/Blank Entity.png" style="position: absolute; height:50%; top: 50%; transform: translate(0, -50%); image-rendering: pixelated; left: 5vw;">
+            <input type="text" id="entityNameInput" placeholder="Enter new name here" style="position: absolute; width: 40%; height: 6.25%; left: 50vh; transform: translateX(5vw); top: 25%; font-size: 3vw; font-family: 'VT323', serif; text-align: center; border-radius: 0%; border-width: 5px; border-style: solid; border-color: white; background-color: black; color: white;">
+            <input type="text" id="entityImageInput" placeholder="Enter image URL here" style="position: absolute; width: 40%; height: 6.25%; left: 50vh; transform: translateX(5vw); top: 35%; font-size: 3vw; font-family: 'VT323', serif; text-align: center; border-radius: 0%; border-width: 5px; border-style: solid; border-color: white; background-color: black; color: white;">
+            <button class="MMB" id="returnButton" style="top: 81.25%" onclick="NavigateToMenu('setMenu'); createEntitySelectionMenu();">SAVE</button>
         </div>
 
         <div class="menu" id="Stats">
@@ -340,6 +343,16 @@
                 }
                 const menu = document.getElementById("editEntityMenu");
                 document.getElementById("editTitle").innerText = 'Edit "' + entity.id + '"'
+                menu.getElementsByTagName("img")[0].src = entities.find(e => e.name == entity.id).image;
+                document.getElementById("entityNameInput").value = entities.find(e => e.name == entity.id).name;
+                document.getElementById("entityImageInput").value = entities.find(e => e.name == entity.id).image;
+                menu.getElementsByTagName("button")[0].onclick = function(){
+                    const ent = entities.find(e => e.name == entity.id);
+                    ent.name = document.getElementById("entityNameInput").value;
+                    ent.image = document.getElementById("entityImageInput").value;
+                    NavigateToMenu('setMenu');
+                    createEntitySelectionMenu();
+                }
             }
 
         </script>
